@@ -132,6 +132,16 @@
             color: var(--on-background);
             margin-bottom: 20px;
         }
+        
+        .sub-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--on-surface-variant);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--surface-variant);
+            padding-bottom: 5px;
+        }
 
         /* --- 5. बॉटम नेविगेशन बार --- */
         #bottom-nav {
@@ -215,29 +225,6 @@
             border: 1px solid var(--surface-variant);
         }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background-color: var(--primary-container);
-            color: var(--on-primary-container);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            text-align: center;
-        }
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-        .stat-card .label {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
         .btn {
             display: block;
             width: 100%;
@@ -274,7 +261,96 @@
             font-weight: 500;
         }
 
-        /* --- 8. मीटिंग और सदस्य कार्ड --- */
+        /* --- 8. नया डैशबोर्ड UI --- */
+        #page-home .welcome-card {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        #page-home .welcome-card h2 {
+            font-size: 1.5rem;
+        }
+        #page-home .welcome-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-slider-container {
+            width: 100%;
+            height: 200px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            background: var(--surface-variant);
+            box-shadow: var(--shadow-2);
+        }
+        .slider-item {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .slider-item.active {
+            opacity: 1;
+        }
+
+        .dashboard-quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .action-btn {
+            background-color: var(--primary-container);
+            color: var(--on-primary-container);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .action-btn:hover {
+            box-shadow: var(--shadow-2);
+        }
+        .action-btn .material-icons-outlined {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .dashboard-pending-feed .feed-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--surface-variant);
+        }
+        .dashboard-pending-feed .feed-item:last-child {
+            border-bottom: none;
+        }
+        .feed-item .icon {
+            color: var(--status-pending-bg);
+        }
+        .feed-item .info p {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .feed-item .info span {
+            font-size: 0.8rem;
+            color: var(--on-surface-variant);
+        }
+
+        /* --- 9. मीटिंग और सदस्य कार्ड --- */
+        .meeting-card {
+            cursor: pointer; /* क्लिक करने योग्य दिखाने के लिए */
+        }
         .meeting-card img {
             width: 100%;
             height: 180px;
@@ -368,7 +444,7 @@
         .status-select.status-completed { background-color: var(--status-completed-bg); }
 
 
-        /* --- 9. मोडल (फॉर्म के लिए) --- */
+        /* --- 10. मोडल (फॉर्म के लिए) --- */
         #modal-backdrop {
             position: fixed;
             top: 0;
@@ -417,7 +493,7 @@
             font-size: 1.4rem;
             color: var(--on-surface);
         }
-        #close-modal {
+        .close-modal {
             background: none;
             border: none;
             font-size: 28px;
@@ -460,8 +536,47 @@
             border: 1px solid var(--outline);
             display: none;
         }
+        
+        /* --- 11. मीटिंग विवरण मोडल --- */
+        #modal-meeting-details .modal-body {
+            padding-bottom: 20px;
+        }
+        #modal-meeting-details .detail-item {
+            margin-bottom: 15px;
+        }
+        #modal-meeting-details .detail-item label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            display: block;
+        }
+        #modal-meeting-details .detail-item p {
+            font-size: 1rem;
+            color: var(--on-surface);
+        }
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .photo-gallery img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--surface-variant);
+        }
+        #add-photo-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--surface-variant);
+        }
+        #add-photo-form .form-group {
+            margin-bottom: 10px;
+        }
 
-        /* --- 10. टोस्ट (नोटिफिकेशन) --- */
+        /* --- 12. टोस्ट (नोटिफिकेशन) --- */
         #toast-container {
             position: fixed;
             bottom: 100px;
@@ -489,7 +604,7 @@
             transform: translateY(0);
         }
 
-        /* --- 11. फुटर --- */
+        /* --- 13. फुटर --- */
         footer {
             background-color: var(--surface-variant);
             color: var(--on-surface-variant);
@@ -515,25 +630,35 @@
         <main>
             <!-- 🏠 पृष्ठ: होम/डैशबोर्ड -->
             <div id="page-home" class="page active">
-                <h2 class="section-title" id="welcome-title">डैशबोर्ड</h2>
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <div class="value" id="stat-meetings">0</div>
-                        <div class="label">कुल बैठकें</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="value" id="stat-members">0</div>
-                        <div class="label">कुल सदस्य</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="value" id="stat-decisions">0</div>
-                        <div class="label">लंबित निर्णय</div>
-                    </div>
+                <div class="welcome-card">
+                    <h2>JAS Mitra में आपका स्वागत है</h2>
+                    <p>स्वस्थ गाँव, सशक्त समुदाय।</p>
+                </div>
+                
+                <!-- इमेज स्लाइडर -->
+                <div class="dashboard-slider-container" id="dashboard-slider">
+                    <!-- JS द्वारा स्लाइडर आइटम यहां भरे जाएंगे -->
                 </div>
 
-                <div class="card">
-                    <h3>त्वरित पहुँच</h3>
-                    <p>नीचे दिए गए नेविगेशन या (+) बटन का उपयोग करके नई बैठकें जोड़ें या मौजूदा डेटा देखें।</p>
+                <!-- त्वरित कार्रवाइयां -->
+                <h3 class="sub-section-title">त्वरित कार्रवाइयां</h3>
+                <div class="dashboard-quick-actions">
+                    <button class="action-btn" id="quick-add-meeting">
+                        <span class="material-icons-outlined">event_note</span>
+                        नई बैठक जोड़ें
+                    </button>
+                    <button class="action-btn" id="quick-add-member">
+                        <span class="material-icons-outlined">person_add</span>
+                        नया सदस्य जोड़ें
+                    </button>
+                </div>
+
+                <!-- लंबित निर्णय -->
+                <h3 class="sub-section-title">लंबित कार्य</h3>
+                <div class="card dashboard-pending-feed">
+                    <div id="dashboard-feed-list">
+                        <!-- JS द्वारा फीड आइटम यहां भरे जाएंगे -->
+                    </div>
                 </div>
             </div>
 
@@ -677,6 +802,39 @@
             </form>
         </div>
         
+        <!-- मीटिंग विवरण मोडल -->
+        <div id="modal-meeting-details" class="modal-container">
+            <div class="modal-header">
+                <h2 id="details-title">मीटिंग विवरण</h2>
+                <button class="close-modal"><span class="material-icons-outlined">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item">
+                    <label>दिनांक</label>
+                    <p id="details-date"></p>
+                </div>
+                <div class="detail-item">
+                    <label>लिए गए निर्णय</label>
+                    <p id="details-decisions"></p>
+                </div>
+                <h3 class="sub-section-title">फोटो गैलरी</h3>
+                <div class="photo-gallery" id="details-photo-gallery">
+                    <!-- JS द्वारा तस्वीरें यहां भरी जाएंगी -->
+                </div>
+                
+                <!-- और तस्वीरें जोड़ें -->
+                <form id="add-photo-form">
+                    <h3 class="sub-section-title">नई तस्वीर जोड़ें</h3>
+                    <div class="form-group">
+                        <label for="newPhoto">कैमरा से नई तस्वीर</label>
+                        <input type="file" id="newPhoto" accept="image/*" capture="camera" required>
+                        <input type="hidden" id="details-meeting-id">
+                    </div>
+                    <button type="submit" class="btn btn-primary">तस्वीर अपलोड करें</button>
+                </form>
+            </div>
+        </div>
+        
         <!-- ===== 8. टोस्ट नोटिफिकेशन कंटेनर ===== -->
         <div id="toast-container"></div>
     </div>
@@ -693,7 +851,6 @@
                     decisions: []
                 },
                 
-                // localStorage से डेटा लोड करें या डिफ़ॉल्ट सेट करें
                 init: function() {
                     const localData = localStorage.getItem('jasMitraData');
                     if (localData) {
@@ -707,7 +864,7 @@
                                     date: '2025-10-25',
                                     agenda: 'मासिक स्वास्थ्य शिविर की योजना',
                                     decisions: 'डॉक्टरों की टीम और दवाओं की व्यवस्था की जाएगी।',
-                                    photo: 'https://placehold.co/600x400/2A9D8F/FFFFFF?text=Meeting+Photo'
+                                    photos: ['https://picsum.photos/600/400?random=1'] // फोटो को ऐरे में बदलें
                                 }
                             ],
                             members: [
@@ -724,30 +881,25 @@
                     }
                 },
                 
-                // डेटा को localStorage में सेव करें
                 save: function() {
                     localStorage.setItem('jasMitraData', JSON.stringify(this.data));
                 },
                 
-                // मीटिंग जोड़ें
                 addMeeting: function(meeting) {
-                    this.data.meetings.unshift(meeting); // सबसे ऊपर जोड़ें
+                    this.data.meetings.unshift(meeting);
                     this.save();
                 },
                 
-                // सदस्य जोड़ें
                 addMember: function(member) {
                     this.data.members.unshift(member);
                     this.save();
                 },
 
-                // निर्णय जोड़ें
                 addDecision: function(decision) {
                     this.data.decisions.unshift(decision);
                     this.save();
                 },
                 
-                // निर्णय का स्टेटस अपडेट करें
                 updateDecisionStatus: function(id, newStatus) {
                     const decision = this.data.decisions.find(d => d.id === id);
                     if (decision) {
@@ -755,26 +907,39 @@
                         this.save();
                     }
                 },
-
-                // सभी मीटिंग्स पाएं
-                getMeetings: function() {
-                    return this.data.meetings;
-                },
-
-                // सभी सदस्य पाएं
-                getMembers: function() {
-                    return this.data.members;
+                
+                // नया फ़ंक्शन: मीटिंग में फोटो जोड़ें
+                addPhotoToMeeting: function(id, photoData) {
+                    const meeting = this.data.meetings.find(m => m.id === id);
+                    if (meeting) {
+                        meeting.photos.push(photoData);
+                        this.save();
+                    }
                 },
                 
-                // सभी निर्णय पाएं
-                getDecisions: function() {
-                    return this.data.decisions;
+                getMeetingById: function(id) {
+                    return this.data.meetings.find(m => m.id === id);
+                },
+
+                getMeetings: function() { return this.data.meetings; },
+                getMembers: function() { return this.data.members; },
+                getDecisions: function() { return this.data.decisions; },
+                
+                // डैशबोर्ड के लिए हेल्पर्स
+                getPendingDecisions: function() {
+                    return this.data.decisions.filter(d => d.status === 'pending').slice(0, 3); // 3 दिखाएं
+                },
+                getRecentPhotos: function(limit = 3) {
+                    return this.data.meetings
+                        .flatMap(m => m.photos) // सभी फोटो को एक ऐरे में लाएं
+                        .slice(0, limit); // केवल कुछ ही लें
                 }
             };
 
             // --- 2. मुख्य ऐप लॉजिक ---
             const app = {
                 currentPage: 'home', // वर्तमान पेज को ट्रैक करें
+                currentSliderIndex: 0,
                 
                 // DOM एलिमेंट्स को कैश करें
                 elements: {
@@ -787,19 +952,31 @@
                     allModals: document.querySelectorAll('.modal-container'),
                     closeModalBtns: document.querySelectorAll('.close-modal'),
                     
+                    // फॉर्म
                     meetingForm: document.getElementById('meeting-form'),
                     photoPreview: document.getElementById('photoPreview'),
-                    
                     memberForm: document.getElementById('member-form'),
                     decisionForm: document.getElementById('decision-form'),
+                    addPhotoForm: document.getElementById('add-photo-form'),
 
+                    // लिस्ट
                     meetingsList: document.getElementById('meetings-list'),
                     membersList: document.getElementById('members-list'),
                     decisionsList: document.getElementById('decisions-list'),
                     
-                    statMeetings: document.getElementById('stat-meetings'),
-                    statMembers: document.getElementById('stat-members'),
-                    statDecisions: document.getElementById('stat-decisions')
+                    // डैशबोर्ड
+                    dashboardSlider: document.getElementById('dashboard-slider'),
+                    dashboardFeedList: document.getElementById('dashboard-feed-list'),
+                    quickAddMeeting: document.getElementById('quick-add-meeting'),
+                    quickAddMember: document.getElementById('quick-add-member'),
+
+                    // मीटिंग विवरण मोडल
+                    modalMeetingDetails: document.getElementById('modal-meeting-details'),
+                    detailsTitle: document.getElementById('details-title'),
+                    detailsDate: document.getElementById('details-date'),
+                    detailsDecisions: document.getElementById('details-decisions'),
+                    detailsPhotoGallery: document.getElementById('details-photo-gallery'),
+                    detailsMeetingId: document.getElementById('details-meeting-id')
                 },
                 
                 // ऐप शुरू करें
@@ -814,17 +991,14 @@
                 addEventListeners: function() {
                     const els = this.elements;
 
-                    // बॉटम नेविगेशन
                     els.navButtons.forEach(btn => {
                         btn.addEventListener('click', () => {
                             this.navigate.showPage(btn.dataset.page);
                         });
                     });
                     
-                    // FAB (स्मार्ट बटन)
                     els.fab.addEventListener('click', () => this.actions.handleFabClick());
                     
-                    // मोडल बंद करें (सभी बटन और बैकड्रॉप)
                     els.closeModalBtns.forEach(btn => {
                         btn.addEventListener('click', () => this.modal.hide());
                     });
@@ -834,9 +1008,18 @@
                     els.meetingForm.addEventListener('submit', (e) => this.actions.submitMeeting(e));
                     els.memberForm.addEventListener('submit', (e) => this.actions.submitMember(e));
                     els.decisionForm.addEventListener('submit', (e) => this.actions.submitDecision(e));
+                    els.addPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhoto(e));
                     
                     // फोटो प्रीव्यू
                     els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e));
+                    
+                    // डैशबोर्ड क्विक बटन
+                    els.quickAddMeeting.addEventListener('click', () => {
+                        this.modal.show('meeting');
+                    });
+                    els.quickAddMember.addEventListener('click', () => {
+                        this.modal.show('member');
+                    });
                     
                     // डायनामिक बटन के लिए इवेंट डेलिगेशन
                     document.body.addEventListener('click', (e) => {
@@ -848,6 +1031,11 @@
                         // डाउनलोड बटन
                         if (e.target.closest('.btn-download')) {
                             this.actions.download();
+                        }
+                        // मीटिंग कार्ड पर क्लिक
+                        const meetingCard = e.target.closest('.meeting-card');
+                        if (meetingCard && meetingCard.dataset.meetingId) {
+                            this.actions.showMeetingDetails(meetingCard.dataset.meetingId);
                         }
                     });
                     
@@ -868,14 +1056,64 @@
                         this.meetings();
                         this.members();
                         this.decisions();
+                        this.dashboardSlider();
                     },
                     
-                    // डैशबोर्ड आँकड़े अपडेट करें
+                    // डैशबोर्ड आँकड़े और फीड
                     dashboard: function() {
-                        const els = app.elements;
-                        els.statMeetings.textContent = db.getMeetings().length;
-                        els.statMembers.textContent = db.getMembers().length;
-                        els.statDecisions.textContent = db.getDecisions().filter(d => d.status !== 'completed').length;
+                        const feedList = app.elements.dashboardFeedList;
+                        const pending = db.getPendingDecisions();
+                        feedList.innerHTML = ''; // फीड को साफ़ करें
+                        if (pending.length === 0) {
+                            feedList.innerHTML = '<p style="font-size: 0.9rem; color: var(--on-surface-variant); text-align: center;">कोई लंबित कार्य नहीं है।</p>';
+                        } else {
+                            pending.forEach(d => {
+                                feedList.innerHTML += `
+                                    <div class="feed-item">
+                                        <span class="material-icons-outlined icon">pending_actions</span>
+                                        <div class="info">
+                                            <p>${d.title}</p>
+                                            <span>जिम्मेदार: ${d.responsible}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                    },
+                    
+                    // डैशबोर्ड स्लाइडर
+                    dashboardSlider: function() {
+                        const slider = app.elements.dashboardSlider;
+                        let photos = db.getRecentPhotos(3); // 3 तस्वीरें लें
+                        
+                        // यदि कोई तस्वीर नहीं है, तो प्लेसहोल्डर जोड़ें
+                        if(photos.length === 0) {
+                            photos = [
+                                'https://picsum.photos/600/400?random=1',
+                                'https://picsum.photos/600/400?random=2',
+                                'https://picsum.photos/600/400?random=3'
+                            ];
+                        }
+
+                        slider.innerHTML = ''; // स्लाइडर साफ़ करें
+                        photos.forEach((photo, index) => {
+                            slider.innerHTML += `
+                                <div class="slider-item ${index === 0 ? 'active' : ''}" 
+                                     style="background-image: url('${photo}')">
+                                </div>
+                            `;
+                        });
+                        
+                        // स्लाइडर लॉजिक
+                        const items = slider.querySelectorAll('.slider-item');
+                        if (items.length > 1) {
+                            app.currentSliderIndex = 0;
+                            setInterval(() => {
+                                items[app.currentSliderIndex].classList.remove('active');
+                                app.currentSliderIndex = (app.currentSliderIndex + 1) % items.length;
+                                items[app.currentSliderIndex].classList.add('active');
+                            }, 4000); // हर 4 सेकंड में बदलें
+                        }
                     },
                     
                     // मीटिंग कार्ड रेंडर करें
@@ -888,22 +1126,13 @@
                             return;
                         }
                         meetings.forEach(m => {
+                            // फोटो ऐरे से पहली तस्वीर लें
+                            const photo = m.photos && m.photos.length > 0 ? m.photos[0] : 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
                             listEl.innerHTML += `
-                                <div class="card meeting-card">
-                                    <img src="${m.photo || 'https://placehold.co/600x400/eee/ccc?text=No+Photo'}" alt="Meeting Photo">
+                                <div class="card meeting-card" data-meeting-id="${m.id}">
+                                    <img src="${photo}" alt="Meeting Photo">
                                     <h3>${m.agenda}</h3>
                                     <p class="meta">दिनांक: ${m.date}</p>
-                                    <p class="agenda">
-                                        <strong>निर्णय:</strong> ${m.decisions || 'N/A'}
-                                    </p>
-                                    <div class="actions">
-                                        <button class="btn-small-icon btn-share" data-agenda="${m.agenda}">
-                                            <span class="material-icons-outlined" style="font-size: 16px;">share</span> शेयर
-                                        </button>
-                                        <button class="btn-small-icon btn-download">
-                                            <span class="material-icons-outlined" style="font-size: 16px;">picture_as_pdf</span> डाउनलोड
-                                        </button>
-                                    </div>
                                 </div>
                             `;
                         });
@@ -962,6 +1191,26 @@
                                 </div>
                             `;
                         });
+                    },
+                    
+                    // मीटिंग विवरण मोडल रेंडर करें
+                    meetingDetails: function(meeting) {
+                        const els = app.elements;
+                        els.detailsTitle.textContent = meeting.agenda;
+                        els.detailsDate.textContent = meeting.date;
+                        els.detailsDecisions.textContent = meeting.decisions || 'N/A';
+                        els.detailsMeetingId.value = meeting.id; // फॉर्म में ID सेव करें
+                        
+                        // फोटो गैलरी भरें
+                        const gallery = els.detailsPhotoGallery;
+                        gallery.innerHTML = '';
+                        if (meeting.photos && meeting.photos.length > 0) {
+                            meeting.photos.forEach(photo => {
+                                gallery.innerHTML += `<img src="${photo}" alt="Meeting Gallery Photo">`;
+                            });
+                        } else {
+                            gallery.innerHTML = '<p>कोई तस्वीर नहीं है।</p>';
+                        }
                     }
                 },
                 
@@ -976,7 +1225,6 @@
                             btn.classList.toggle('active', btn.dataset.page === pageId);
                         });
                         
-                        // FAB को अपडेट करें
                         const fab = app.elements.fab;
                         const fabIcon = app.elements.fabIcon;
                         
@@ -1019,6 +1267,7 @@
                         app.elements.meetingForm.reset();
                         app.elements.memberForm.reset();
                         app.elements.decisionForm.reset();
+                        app.elements.addPhotoForm.reset();
                         app.elements.photoPreview.style.display = 'none';
                         app.elements.photoPreview.src = '';
                     }
@@ -1045,16 +1294,18 @@
                     submitMeeting: function(e) {
                         e.preventDefault();
                         const form = app.elements.meetingForm;
+                        const photoData = app.elements.photoPreview.src || 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
                         const newMeeting = {
                             id: 'm' + Date.now(),
                             date: form.meetingDate.value,
                             agenda: form.meetingAgenda.value,
                             decisions: form.meetingDecisions.value,
-                            photo: app.elements.photoPreview.src || 'https://placehold.co/600x400/eee/ccc?text=No+Photo'
+                            photos: [photoData] // इसे एक ऐरे के रूप में सेव करें
                         };
                         db.addMeeting(newMeeting);
                         app.render.meetings();
-                        app.render.dashboard();
+                        app.render.dashboard(); // फीड और स्लाइडर अपडेट करें
+                        app.render.dashboardSlider();
                         app.modal.hide();
                         app.toast.show('बैठक सफलतापूर्वक सेव की गई!');
                         app.navigate.showPage('meetings');
@@ -1091,24 +1342,46 @@
                         };
                         db.addDecision(newDecision);
                         app.render.decisions();
-                        app.render.dashboard();
+                        app.render.dashboard(); // फीड अपडेट करें
                         app.modal.hide();
                         app.toast.show('निर्णय सफलतापूर्वक जोड़ा गया!');
                         app.navigate.showPage('decisions');
+                    },
+                    
+                    // मीटिंग विवरण में नई तस्वीर सबमिट करें
+                    submitAnotherPhoto: function(e) {
+                        e.preventDefault();
+                        const form = app.elements.addPhotoForm;
+                        const meetingId = form.elements['details-meeting-id'].value;
+                        const photoFile = form.elements['newPhoto'].files[0];
+                        
+                        if (photoFile) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const photoData = e.target.result;
+                                db.addPhotoToMeeting(meetingId, photoData);
+                                // मोडल को रिफ्रेश करें
+                                const updatedMeeting = db.getMeetingById(meetingId);
+                                app.render.meetingDetails(updatedMeeting);
+                                app.render.dashboardSlider(); // स्लाइडर को भी रिफ्रेश करें
+                                form.reset();
+                                app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                            };
+                            reader.readAsDataURL(photoFile);
+                        } else {
+                            app.toast.show('कृपया एक तस्वीर चुनें।');
+                        }
                     },
 
                     // स्टेटस अपडेट
                     updateDecisionStatus: function(id, newStatus, selectElement) {
                         db.updateDecisionStatus(id, newStatus);
-                        
-                        // क्लास अपडेट करें ताकि रंग तुरंत बदले
                         selectElement.className = 'status-select status-' + newStatus;
-                        
                         app.render.dashboard(); // लंबित गिनती अपडेट करें
                         app.toast.show('स्टेटस अपडेट किया गया!');
                     },
                     
-                    // फोटो प्रीव्यू
+                    // फोटो प्रीव्यू (नई मीटिंग फॉर्म के लिए)
                     previewPhoto: function(event) {
                         const file = event.target.files[0];
                         if (file) {
@@ -1121,17 +1394,23 @@
                         }
                     },
                     
-                    // (फेक) शेयर
+                    // मीटिंग विवरण दिखाएं
+                    showMeetingDetails: function(id) {
+                        const meeting = db.getMeetingById(id);
+                        if (meeting) {
+                            app.render.meetingDetails(meeting);
+                            app.modal.show('meeting-details');
+                        }
+                    },
+                    
                     share: function(agenda) {
                         const text = `*JAS मित्र बैठक सूचना*\n\n*विषय:* ${agenda}\n\nयह रिपोर्ट JAS मित्र ऐप के माध्यम से साझा की गई है।`;
                         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                         window.open(url, '_blank');
                     },
                     
-                    // (फेक) डाउनलोड
                     download: function() {
                         app.toast.show('प्रोटोटाइप: रिपोर्ट डाउनलोड हो रही है...');
-                        // असली ऐप में, यहां jsPDF या सर्वर कॉल होगी
                     }
                 },
                 
