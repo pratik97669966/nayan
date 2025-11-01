@@ -68,6 +68,7 @@
             background-color: var(--background);
             color: var(--on-background);
             line-height: 1.6;
+            -webkit-tap-highlight-color: transparent; /* मोबाइल पर क्लिक फ्लैश हटाता है */
         }
 
         /* --- 2. मुख्य ऐप लेआउट --- */
@@ -583,6 +584,7 @@
             object-fit: cover;
             border-radius: var(--radius-md);
             border: 1px solid var(--surface-variant);
+            cursor: pointer;
         }
         .add-photo-form {
             margin-top: 20px;
@@ -620,8 +622,47 @@
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* --- 13. फुलस्क्रीन इमेज व्यूअर (नया) --- */
+        .modal-container-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            padding: 10px;
+        }
+        .modal-container-fullscreen.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .close-fullscreen-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 401;
+        }
+        #fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+        }
 
-        /* --- 13. फुटर --- */
+        /* --- 14. फुटर --- */
         footer {
             background-color: var(--surface-variant);
             color: var(--on-surface-variant);
@@ -892,9 +933,16 @@
         
         <!-- ===== 8. टोस्ट नोटिफिकेशन कंटेनर ===== -->
         <div id="toast-container"></div>
+        
+        <!-- ===== 9. Lighbox (Fullscreen Image Viewer) ===== -->
+        <div id="modal-image-viewer" class="modal-container-fullscreen">
+            <button class="close-fullscreen-modal"><span class="material-icons-outlined">close</span></button>
+            <img id="fullscreen-image" src="" alt="Fullscreen Image">
+        </div>
+
     </div>
 
-    <!-- ===== 9. जावास्क्रिप्ट (ऐप लॉजिक) ===== -->
+    <!-- ===== 10. जावास्क्रिप्ट (ऐप लॉजिक) ===== -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -937,7 +985,16 @@
                 },
                 
                 save: function() {
-                    localStorage.setItem('jasMitraData', JSON.stringify(this.data));
+                    try {
+                        localStorage.setItem('jasMitraData', JSON.stringify(this.data));
+                    } catch (e) {
+                        if (e.name === 'QuotaExceededError') {
+                            console.error('Storage quota exceeded! Cannot save data.');
+                            alert('Storage Error: Cannot save data. The local storage is full.');
+                        } else {
+                            console.error('Failed to save data:', e);
+                        }
+                    }
                 },
                 
                 addMeeting: function(meeting) {
@@ -1052,7 +1109,12 @@
                     detailsDecisionResponsible: document.getElementById('details-decision-responsible'),
                     detailsDecisionDetails: document.getElementById('details-decision-details'),
                     detailsDecisionPhotoGallery: document.getElementById('details-decision-photo-gallery'),
-                    detailsDecisionId: document.getElementById('details-decision-id')
+                    detailsDecisionId: document.getElementById('details-decision-id'),
+                    
+                    // Lighbox
+                    modalImageViewer: document.getElementById('modal-image-viewer'),
+                    fullscreenImage: document.getElementById('fullscreen-image'),
+                    closeFullscreenModal: document.querySelector('.close-fullscreen-modal')
                 },
                 
                 // ऐप शुरू करें
@@ -1080,6 +1142,9 @@
                     });
                     els.modalBackdrop.addEventListener('click', () => this.modal.hide());
                     
+                    // Lighbox बंद करें
+                    els.modalImageViewer.addEventListener('click', () => this.modal.hide('image-viewer'));
+                    
                     // फॉर्म सबमिशन
                     els.meetingForm.addEventListener('submit', (e) => this.actions.submitMeeting(e));
                     els.memberForm.addEventListener('submit', (e) => this.actions.submitMember(e));
@@ -1088,8 +1153,8 @@
                     els.addDecisionPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhotoToDecision(e));
                     
                     // फोटो प्रीव्यू
-                    els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.photoPreview));
-                    els.memberForm.memberPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.memberPhotoPreview));
+                    els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.photoPreview, e.target));
+                    els.memberForm.memberPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.memberPhotoPreview, e.target));
                     
                     // डैशबोर्ड क्विक बटन
                     els.quickAddMeeting.addEventListener('click', () => {
@@ -1119,6 +1184,11 @@
                         const decisionEditBtn = e.target.closest('.btn-edit-decision');
                         if (decisionEditBtn && decisionEditBtn.dataset.id) {
                             this.actions.showDecisionDetails(decisionEditBtn.dataset.id);
+                        }
+                        // फुलस्क्रीन इमेज क्लिक
+                        if (e.target.matches('.photo-gallery img')) {
+                            e.stopPropagation(); // मोडल को बंद होने से रोकें
+                            this.actions.showFullscreenImage(e.target.src);
                         }
                     });
                     
@@ -1169,7 +1239,7 @@
                         const slider = app.elements.dashboardSlider;
                         let photos = db.getRecentPhotos(3); // 3 तस्वीरें लें
                         
-                        // यदि कोई तस्वीर नहीं है, तो प्लेसहोल्डर जोड़ें
+                        // यदि कोई तस्वीर नहीं है, तो आपकी दी गई तस्वीर को प्लेसहोल्डर के रूप में उपयोग करें
                         if(photos.length === 0) {
                             photos = [
                                 'https://i.postimg.cc/tJLxR4GT/Whats-App-Image-2025-11-01-at-18-45-22-460e6b88.jpg'
@@ -1188,8 +1258,9 @@
                         // स्लाइडर लॉजिक
                         const items = slider.querySelectorAll('.slider-item');
                         if (items.length > 1) {
+                            if (app.sliderInterval) clearInterval(app.sliderInterval); // पुराना इंटरवल साफ़ करें
                             app.currentSliderIndex = 0;
-                            setInterval(() => {
+                            app.sliderInterval = setInterval(() => {
                                 items[app.currentSliderIndex].classList.remove('active');
                                 app.currentSliderIndex = (app.currentSliderIndex + 1) % items.length;
                                 items[app.currentSliderIndex].classList.add('active');
@@ -1366,21 +1437,33 @@
                             modal.classList.add('visible');
                         }
                     },
-                    hide: function() {
+                    hide: function(modalId = null) {
+                        if (modalId === 'image-viewer') {
+                            app.elements.modalImageViewer.classList.remove('visible');
+                            return;
+                        }
+                        
                         app.elements.modalBackdrop.classList.remove('visible');
                         app.elements.allModals.forEach(modal => {
                             modal.classList.remove('visible');
                         });
+                        
                         // सभी फॉर्म रीसेट करें
                         app.elements.meetingForm.reset();
                         app.elements.memberForm.reset();
                         app.elements.decisionForm.reset();
                         app.elements.addPhotoForm.reset();
                         app.elements.addDecisionPhotoForm.reset();
+                        
+                        // सभी प्रीव्यू साफ़ करें
                         app.elements.photoPreview.style.display = 'none';
                         app.elements.photoPreview.src = '';
                         app.elements.memberPhotoPreview.style.display = 'none';
                         app.elements.memberPhotoPreview.src = '';
+                        
+                        // कंप्रेस्ड डेटा साफ़ करें
+                        app.elements.meetingForm.meetingPhoto.dataset.compressedData = '';
+                        app.elements.memberForm.memberPhoto.dataset.compressedData = '';
                     }
                 },
                 
@@ -1405,7 +1488,8 @@
                     submitMeeting: function(e) {
                         e.preventDefault();
                         const form = app.elements.meetingForm;
-                        const photoData = app.elements.photoPreview.src || 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
+                        const photoData = form.meetingPhoto.dataset.compressedData || 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
+                        
                         const newMeeting = {
                             id: 'm' + Date.now(),
                             date: form.meetingDate.value,
@@ -1426,12 +1510,14 @@
                     submitMember: function(e) {
                         e.preventDefault();
                         const form = app.elements.memberForm;
+                        const photoData = form.memberPhoto.dataset.compressedData || null;
+                        
                         const newMember = {
                             id: 'p' + Date.now(),
                             name: form.memberName.value,
                             role: form.memberRole.value,
                             phone: form.memberPhone.value,
-                            photo: app.elements.memberPhotoPreview.src || null
+                            photo: photoData
                         };
                         db.addMember(newMember);
                         app.render.members();
@@ -1469,9 +1555,8 @@
                         const photoFile = form.elements['newMeetingPhoto'].files[0];
                         
                         if (photoFile) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                const photoData = e.target.result;
+                            app.toast.show('Compressing photo...');
+                            this.compressImage(photoFile, (photoData) => {
                                 db.addPhotoToMeeting(meetingId, photoData);
                                 // मोडल को रिफ्रेश करें
                                 const updatedMeeting = db.getMeetingById(meetingId);
@@ -1479,8 +1564,7 @@
                                 app.render.dashboardSlider(); // स्लाइडर को भी रिफ्रेश करें
                                 form.reset();
                                 app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
-                            };
-                            reader.readAsDataURL(photoFile);
+                            });
                         } else {
                             app.toast.show('कृपया एक तस्वीर चुनें।');
                         }
@@ -1494,17 +1578,15 @@
                         const photoFile = form.elements['newDecisionPhoto'].files[0];
                         
                         if (photoFile) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                const photoData = e.target.result;
+                            app.toast.show('Compressing photo...');
+                            this.compressImage(photoFile, (photoData) => {
                                 db.addPhotoToDecision(decisionId, photoData);
                                 // मोडल को रिफ्रेश करें
                                 const updatedDecision = db.getDecisionById(decisionId);
                                 app.render.decisionDetails(updatedDecision);
                                 form.reset();
                                 app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
-                            };
-                            reader.readAsDataURL(photoFile);
+                            });
                         } else {
                             app.toast.show('कृपया एक तस्वीर चुनें।');
                         }
@@ -1518,17 +1600,65 @@
                         app.toast.show('स्टेटस अपडेट किया गया!');
                     },
                     
-                    // फोटो प्रीव्यू (जेनेरिक)
-                    previewPhoto: function(event, previewElement) {
+                    // फोटो प्रीव्यू (जेनेरिक) और कंप्रेस
+                    previewPhoto: function(event, previewElement, inputElement) {
                         const file = event.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                previewElement.src = e.target.result;
-                                previewElement.style.display = 'block';
-                            };
-                            reader.readAsDataURL(file);
+                        if (!file) {
+                            inputElement.dataset.compressedData = '';
+                            previewElement.style.display = 'none';
+                            return;
                         }
+                        
+                        // 1. तुरंत प्रीव्यू दिखाएं
+                        previewElement.src = URL.createObjectURL(file);
+                        previewElement.style.display = 'block';
+                        
+                        // 2. कंप्रेस करें और डेटा को बैकग्राउंड में सेव करें
+                        app.toast.show('Compressing photo...');
+                        this.compressImage(file, (compressedData) => {
+                            inputElement.dataset.compressedData = compressedData;
+                            app.toast.show('Photo ready to save!');
+                        });
+                    },
+                    
+                    // नया: इमेज कंप्रेशन फ़ंक्शन
+                    compressImage: function(file, callback) {
+                        const MAX_WIDTH = 1024;
+                        const MAX_HEIGHT = 1024;
+                        const MIME_TYPE = "image/jpeg";
+                        const QUALITY = 0.7; // 70% quality
+
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+                                
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+                                
+                                const compressedData = canvas.toDataURL(MIME_TYPE, QUALITY);
+                                callback(compressedData);
+                            };
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
                     },
                     
                     // मीटिंग विवरण दिखाएं
@@ -1547,6 +1677,12 @@
                             app.render.decisionDetails(decision);
                             app.modal.show('decision-details');
                         }
+                    },
+                    
+                    // फुलस्क्रीन इमेज दिखाएं
+                    showFullscreenImage: function(src) {
+                        app.elements.fullscreenImage.src = src;
+                        app.modal.show('image-viewer');
                     },
                     
                     share: function(agenda) {
