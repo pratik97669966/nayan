@@ -931,7 +931,7 @@
 
         <!-- ===== हेडर ===== -->
         <header>
-            <img src="https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS" alt="Logo" class="logo-img"
+            <img src="/logo.png" alt="Logo" class="logo-img"
                 onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
             <span class="logo">JAS Mitra</span>
         </header>
@@ -1302,7 +1302,7 @@
                     const loadingOverlay = document.getElementById('loading-overlay');
 
                     // मीटिंग्स श्रोता
-                    const meetingsRef = ref(db, `jasMitraData/${userId}/meetings`);
+                    const meetingsRef = ref(db, `jasMitraData/meetings`);
                     onValue(meetingsRef, (snapshot) => {
                         const data = snapshot.val();
                         // Firebase RTDB ऑब्जेक्ट को ऐरे में बदलें
@@ -1319,7 +1319,7 @@
                     });
 
                     // सदस्य श्रोता
-                    const membersRef = ref(db, `jasMitraData/${userId}/members`);
+                    const membersRef = ref(db, `jasMitraData/members`);
                     onValue(membersRef, (snapshot) => {
                         const data = snapshot.val();
                         const membersArray = data ? Object.keys(data).map(key => ({ ...data[key], id: key })).sort((a, b) => b.createdAt - a.createdAt) : [];
@@ -1331,7 +1331,7 @@
                     });
 
                     // निर्णय श्रोता
-                    const decisionsRef = ref(db, `jasMitraData/${userId}/decisions`);
+                    const decisionsRef = ref(db, `jasMitraData/decisions`);
                     onValue(decisionsRef, (snapshot) => {
                         const data = snapshot.val();
                         const decisionsArray = data ? Object.keys(data).map(key => ({ ...data[key], id: key })).sort((a, b) => b.createdAt - a.createdAt) : [];
@@ -1353,7 +1353,7 @@
                     meeting.createdAt = serverTimestamp(); // सर्वर पर समय सेट करें
 
                     // RTDB में सेव करें
-                    const newMeetingRef = push(ref(db, `jasMitraData/${userId}/meetings`));
+                    const newMeetingRef = push(ref(db, `jasMitraData/meetings`));
                     // meeting.id = newMeetingRef.key; // ID को अब सेव करने की ज़रूरत नहीं है, onValue इसे हैंडल करेगा
                     await set(newMeetingRef, meeting);
                 },
@@ -1365,7 +1365,7 @@
                     member.createdAt = serverTimestamp();
 
                     // RTDB में सेव करें
-                    const newMemberRef = push(ref(db, `jasMitraData/${userId}/members`));
+                    const newMemberRef = push(ref(db, `jasMitraData/members`));
                     // member.id = newMemberRef.key;
                     await set(newMemberRef, member);
                 },
@@ -1373,7 +1373,7 @@
                 addDecision: async (decision) => {
                     const userId = app.data.userId;
                     decision.createdAt = serverTimestamp();
-                    const newDecisionRef = push(ref(db, `jasMitraData/${userId}/decisions`));
+                    const newDecisionRef = push(ref(db, `jasMitraData/decisions`));
                     // decision.id = newDecisionRef.key;
                     await set(newDecisionRef, decision);
                 },
@@ -1381,21 +1381,21 @@
                 updateDecisionStatus: async (id, newStatus) => {
                     const userId = app.data.userId;
                     // यहाँ 'id' Firebase द्वारा दी गई कुंजी है
-                    const decisionRef = ref(db, `jasMitraData/${userId}/decisions/${id}`);
+                    const decisionRef = ref(db, `jasMitraData/decisions/${id}`);
                     await update(decisionRef, { status: newStatus });
                 },
 
                 addPhotoToMeeting: async (id, photoData) => {
                     const userId = app.data.userId;
                     // Base64 डेटा को सीधे 'photos' ऑब्जेक्ट में पुश करें
-                    const photosRef = ref(db, `jasMitraData/${userId}/meetings/${id}/photos`);
+                    const photosRef = ref(db, `jasMitraData/meetings/${id}/photos`);
                     const newPhotoRef = push(photosRef); // 'photos' के अंदर एक नई कुंजी बनाएँ
                     await set(newPhotoRef, photoData); // Base64 स्ट्रिंग को सेव करें
                 },
 
                 addPhotoToDecision: async (id, photoData) => {
                     const userId = app.data.userId;
-                    const photosRef = ref(db, `jasMitraData/${userId}/decisions/${id}/photos`);
+                    const photosRef = ref(db, `jasMitraData/decisions/${id}/photos`);
                     const newPhotoRef = push(photosRef);
                     await set(newPhotoRef, photoData); // Base64 स्ट्रिंग को सेव करें
                 },
