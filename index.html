@@ -223,6 +223,7 @@
             padding: 16px;
             margin-bottom: 20px;
             border: 1px solid var(--surface-variant);
+            position: relative; /* एडिट बटन के लिए */
         }
         
         .btn {
@@ -259,6 +260,18 @@
             align-items: center;
             gap: 5px;
             font-weight: 500;
+        }
+        
+        .btn-icon-round {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-full);
+        }
+        .btn-icon-round:hover {
+            background-color: var(--surface-variant);
         }
 
         /* --- 8. नया डैशबोर्ड UI --- */
@@ -370,26 +383,23 @@
             color: var(--on-surface-variant);
             margin-bottom: 10px;
         }
-        .meeting-card .agenda {
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-        .meeting-card .actions {
-            display: flex;
-            gap: 10px;
-        }
 
         .member-card {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .member-card .icon {
-            font-size: 40px;
-            color: var(--on-primary-container);
-            background-color: var(--primary-container);
-            padding: 10px;
+        .member-card .profile-pic {
+            width: 50px;
+            height: 50px;
             border-radius: var(--radius-full);
+            object-fit: cover;
+            background-color: var(--primary-container);
+            color: var(--on-primary-container);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
         }
         .member-card .info h3 {
             font-size: 1.1rem;
@@ -415,6 +425,7 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            padding-right: 40px; /* एडिट बटन के लिए जगह */
         }
         .decision-card h3 {
             font-size: 1.1rem;
@@ -442,6 +453,12 @@
         .status-select.status-pending { background-color: var(--status-pending-bg); }
         .status-select.status-in-progress { background-color: var(--status-inprogress-bg); }
         .status-select.status-completed { background-color: var(--status-completed-bg); }
+
+        .btn-edit-decision {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
 
 
         /* --- 10. मोडल (फॉर्म के लिए) --- */
@@ -528,7 +545,7 @@
             color: var(--on-primary-container);
         }
         
-        #photoPreview {
+        .preview-image {
             width: 100%;
             max-width: 200px;
             margin-top: 10px;
@@ -537,20 +554,20 @@
             display: none;
         }
         
-        /* --- 11. मीटिंग विवरण मोडल --- */
-        #modal-meeting-details .modal-body {
+        /* --- 11. विवरण मोडल --- */
+        .modal-body {
             padding-bottom: 20px;
         }
-        #modal-meeting-details .detail-item {
+        .detail-item {
             margin-bottom: 15px;
         }
-        #modal-meeting-details .detail-item label {
+        .detail-item label {
             font-size: 0.8rem;
             font-weight: 500;
             color: var(--on-surface-variant);
             display: block;
         }
-        #modal-meeting-details .detail-item p {
+        .detail-item p {
             font-size: 1rem;
             color: var(--on-surface);
         }
@@ -567,12 +584,12 @@
             border-radius: var(--radius-md);
             border: 1px solid var(--surface-variant);
         }
-        #add-photo-form {
+        .add-photo-form {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--surface-variant);
         }
-        #add-photo-form .form-group {
+        .add-photo-form .form-group {
             margin-bottom: 10px;
         }
 
@@ -742,7 +759,7 @@
                 <div class="form-group">
                     <label for="meetingPhoto">फोटो (कैमरा से)</label>
                     <input type="file" id="meetingPhoto" accept="image/*" capture="camera">
-                    <img id="photoPreview" alt="फोटो प्रीव्यू">
+                    <img id="photoPreview" class="preview-image" alt="फोटो प्रीव्यू">
                 </div>
                 <button type="submit" class="btn btn-primary">बैठक सेव करें</button>
             </form>
@@ -766,6 +783,11 @@
                 <div class="form-group">
                     <label for="memberPhone">फ़ोन नंबर</label>
                     <input type="tel" id="memberPhone" placeholder="9876543210" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberPhoto">प्रोफ़ाइल फोटो</label>
+                    <input type="file" id="memberPhoto" accept="image/*" capture="camera">
+                    <img id="memberPhotoPreview" class="preview-image" alt="फोटो प्रीव्यू">
                 </div>
                 <button type="submit" class="btn btn-primary">सदस्य सेव करें</button>
             </form>
@@ -823,12 +845,45 @@
                 </div>
                 
                 <!-- और तस्वीरें जोड़ें -->
-                <form id="add-photo-form">
+                <form id="add-photo-form" class="add-photo-form">
                     <h3 class="sub-section-title">नई तस्वीर जोड़ें</h3>
                     <div class="form-group">
-                        <label for="newPhoto">कैमरा से नई तस्वीर</label>
-                        <input type="file" id="newPhoto" accept="image/*" capture="camera" required>
+                        <label for="newMeetingPhoto">कैमरा से नई तस्वीर</label>
+                        <input type="file" id="newMeetingPhoto" accept="image/*" capture="camera" required>
                         <input type="hidden" id="details-meeting-id">
+                    </div>
+                    <button type="submit" class="btn btn-primary">तस्वीर अपलोड करें</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- निर्णय विवरण मोडल -->
+        <div id="modal-decision-details" class="modal-container">
+            <div class="modal-header">
+                <h2 id="details-decision-title">निर्णय विवरण</h2>
+                <button class="close-modal"><span class="material-icons-outlined">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item">
+                    <label>जिम्मेदार</label>
+                    <p id="details-decision-responsible"></p>
+                </div>
+                <div class="detail-item">
+                    <label>विवरण / नोट्स</label>
+                    <p id="details-decision-details"></p>
+                </div>
+                <h3 class="sub-section-title">फोटो गैलरी</h3>
+                <div class="photo-gallery" id="details-decision-photo-gallery">
+                    <!-- JS द्वारा तस्वीरें यहां भरी जाएंगी -->
+                </div>
+                
+                <!-- और तस्वीरें जोड़ें -->
+                <form id="add-decision-photo-form" class="add-photo-form">
+                    <h3 class="sub-section-title">नई तस्वीर जोड़ें</h3>
+                    <div class="form-group">
+                        <label for="newDecisionPhoto">कैमरा से नई तस्वीर</label>
+                        <input type="file" id="newDecisionPhoto" accept="image/*" capture="camera" required>
+                        <input type="hidden" id="details-decision-id">
                     </div>
                     <button type="submit" class="btn btn-primary">तस्वीर अपलोड करें</button>
                 </form>
@@ -868,13 +923,13 @@
                                 }
                             ],
                             members: [
-                                { id: 'p1', name: 'श्री. रमेश पाटिल', role: 'अध्यक्ष (सरपंच)', phone: '9876543210' },
-                                { id: 'p2', name: 'श्रीमती. सीता देवी', role: 'सचिव (ANM)', phone: '9123456789' }
+                                { id: 'p1', name: 'श्री. रमेश पाटिल', role: 'अध्यक्ष (सरपंच)', phone: '9876543210', photo: null },
+                                { id: 'p2', name: 'श्रीमती. सीता देवी', role: 'सचिव (ANM)', phone: '9123456789', photo: null }
                             ],
                             decisions: [
-                                { id: 'd1', title: 'पानी की टंकी की सफाई', status: 'completed', responsible: 'रमेश पाटिल', details: 'सफाई का काम पूरा हो गया है।' },
-                                { id: 'd2', title: 'मच्छर फॉगिंग मशीन', status: 'in-progress', responsible: 'सीता देवी', details: 'मशीन का ऑर्डर दे दिया गया है।' },
-                                { id: 'd3', title: 'पोषण वाटिका निर्माण', status: 'pending', responsible: 'आशा कार्यकर्ता', details: 'जगह का चयन करना बाकी है।' }
+                                { id: 'd1', title: 'पानी की टंकी की सफाई', status: 'completed', responsible: 'रमेश पाटिल', details: 'सफाई का काम पूरा हो गया है।', photos: [] },
+                                { id: 'd2', title: 'मच्छर फॉगिंग मशीन', status: 'in-progress', responsible: 'सीता देवी', details: 'मशीन का ऑर्डर दे दिया गया है।', photos: [] },
+                                { id: 'd3', title: 'पोषण वाटिका निर्माण', status: 'pending', responsible: 'आशा कार्यकर्ता', details: 'जगह का चयन करना बाकी है।', photos: [] }
                             ]
                         };
                         this.save();
@@ -908,17 +963,30 @@
                     }
                 },
                 
-                // नया फ़ंक्शन: मीटिंग में फोटो जोड़ें
                 addPhotoToMeeting: function(id, photoData) {
                     const meeting = this.data.meetings.find(m => m.id === id);
                     if (meeting) {
+                        if (!meeting.photos) meeting.photos = [];
                         meeting.photos.push(photoData);
+                        this.save();
+                    }
+                },
+                
+                addPhotoToDecision: function(id, photoData) {
+                    const decision = this.data.decisions.find(d => d.id === id);
+                    if (decision) {
+                        if (!decision.photos) decision.photos = [];
+                        decision.photos.push(photoData);
                         this.save();
                     }
                 },
                 
                 getMeetingById: function(id) {
                     return this.data.meetings.find(m => m.id === id);
+                },
+                
+                getDecisionById: function(id) {
+                    return this.data.decisions.find(d => d.id === id);
                 },
 
                 getMeetings: function() { return this.data.meetings; },
@@ -931,7 +999,7 @@
                 },
                 getRecentPhotos: function(limit = 3) {
                     return this.data.meetings
-                        .flatMap(m => m.photos) // सभी फोटो को एक ऐरे में लाएं
+                        .flatMap(m => m.photos || []) // सभी फोटो को एक ऐरे में लाएं
                         .slice(0, limit); // केवल कुछ ही लें
                 }
             };
@@ -956,8 +1024,10 @@
                     meetingForm: document.getElementById('meeting-form'),
                     photoPreview: document.getElementById('photoPreview'),
                     memberForm: document.getElementById('member-form'),
+                    memberPhotoPreview: document.getElementById('memberPhotoPreview'),
                     decisionForm: document.getElementById('decision-form'),
                     addPhotoForm: document.getElementById('add-photo-form'),
+                    addDecisionPhotoForm: document.getElementById('add-decision-photo-form'),
 
                     // लिस्ट
                     meetingsList: document.getElementById('meetings-list'),
@@ -971,12 +1041,18 @@
                     quickAddMember: document.getElementById('quick-add-member'),
 
                     // मीटिंग विवरण मोडल
-                    modalMeetingDetails: document.getElementById('modal-meeting-details'),
                     detailsTitle: document.getElementById('details-title'),
                     detailsDate: document.getElementById('details-date'),
                     detailsDecisions: document.getElementById('details-decisions'),
                     detailsPhotoGallery: document.getElementById('details-photo-gallery'),
-                    detailsMeetingId: document.getElementById('details-meeting-id')
+                    detailsMeetingId: document.getElementById('details-meeting-id'),
+                    
+                    // निर्णय विवरण मोडल
+                    detailsDecisionTitle: document.getElementById('details-decision-title'),
+                    detailsDecisionResponsible: document.getElementById('details-decision-responsible'),
+                    detailsDecisionDetails: document.getElementById('details-decision-details'),
+                    detailsDecisionPhotoGallery: document.getElementById('details-decision-photo-gallery'),
+                    detailsDecisionId: document.getElementById('details-decision-id')
                 },
                 
                 // ऐप शुरू करें
@@ -1009,9 +1085,11 @@
                     els.memberForm.addEventListener('submit', (e) => this.actions.submitMember(e));
                     els.decisionForm.addEventListener('submit', (e) => this.actions.submitDecision(e));
                     els.addPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhoto(e));
+                    els.addDecisionPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhotoToDecision(e));
                     
                     // फोटो प्रीव्यू
-                    els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e));
+                    els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.photoPreview));
+                    els.memberForm.memberPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.memberPhotoPreview));
                     
                     // डैशबोर्ड क्विक बटन
                     els.quickAddMeeting.addEventListener('click', () => {
@@ -1036,6 +1114,11 @@
                         const meetingCard = e.target.closest('.meeting-card');
                         if (meetingCard && meetingCard.dataset.meetingId) {
                             this.actions.showMeetingDetails(meetingCard.dataset.meetingId);
+                        }
+                        // निर्णय एडिट बटन पर क्लिक
+                        const decisionEditBtn = e.target.closest('.btn-edit-decision');
+                        if (decisionEditBtn && decisionEditBtn.dataset.id) {
+                            this.actions.showDecisionDetails(decisionEditBtn.dataset.id);
                         }
                     });
                     
@@ -1089,9 +1172,7 @@
                         // यदि कोई तस्वीर नहीं है, तो प्लेसहोल्डर जोड़ें
                         if(photos.length === 0) {
                             photos = [
-                                'https://picsum.photos/600/400?random=1',
-                                'https://picsum.photos/600/400?random=2',
-                                'https://picsum.photos/600/400?random=3'
+                                'https://i.postimg.cc/tJLxR4GT/Whats-App-Image-2025-11-01-at-18-45-22-460e6b88.jpg'
                             ];
                         }
 
@@ -1148,9 +1229,13 @@
                             return;
                         }
                         members.forEach(p => {
+                            const photo = p.photo ? 
+                                `<img src="${p.photo}" alt="${p.name}" class="profile-pic">` : 
+                                `<div class="profile-pic"><span class="material-icons-outlined">person</span></div>`;
+                                
                             listEl.innerHTML += `
                                 <div class="card member-card">
-                                    <span class="material-icons-outlined icon">person</span>
+                                    ${photo}
                                     <div class="info">
                                         <h3>${p.name}</h3>
                                         <p>${p.role} | ${p.phone}</p>
@@ -1182,6 +1267,9 @@
                             
                             listEl.innerHTML += `
                                 <div class="card decision-card">
+                                    <button class="btn-icon-round btn-edit-decision" data-id="${d.id}">
+                                        <span class="material-icons-outlined">edit</span>
+                                    </button>
                                     <h3>${d.title}</h3>
                                     <select class="status-select status-${d.status}" data-id="${d.id}">
                                         ${statusOptions}
@@ -1207,6 +1295,26 @@
                         if (meeting.photos && meeting.photos.length > 0) {
                             meeting.photos.forEach(photo => {
                                 gallery.innerHTML += `<img src="${photo}" alt="Meeting Gallery Photo">`;
+                            });
+                        } else {
+                            gallery.innerHTML = '<p>कोई तस्वीर नहीं है।</p>';
+                        }
+                    },
+                    
+                    // निर्णय विवरण मोडल रेंडर करें
+                    decisionDetails: function(decision) {
+                        const els = app.elements;
+                        els.detailsDecisionTitle.textContent = decision.title;
+                        els.detailsDecisionResponsible.textContent = decision.responsible;
+                        els.detailsDecisionDetails.textContent = decision.details || 'N/A';
+                        els.detailsDecisionId.value = decision.id; // फॉर्म में ID सेव करें
+                        
+                        // फोटो गैलरी भरें
+                        const gallery = els.detailsDecisionPhotoGallery;
+                        gallery.innerHTML = '';
+                        if (decision.photos && decision.photos.length > 0) {
+                            decision.photos.forEach(photo => {
+                                gallery.innerHTML += `<img src="${photo}" alt="Decision Gallery Photo">`;
                             });
                         } else {
                             gallery.innerHTML = '<p>कोई तस्वीर नहीं है।</p>';
@@ -1268,8 +1376,11 @@
                         app.elements.memberForm.reset();
                         app.elements.decisionForm.reset();
                         app.elements.addPhotoForm.reset();
+                        app.elements.addDecisionPhotoForm.reset();
                         app.elements.photoPreview.style.display = 'none';
                         app.elements.photoPreview.src = '';
+                        app.elements.memberPhotoPreview.style.display = 'none';
+                        app.elements.memberPhotoPreview.src = '';
                     }
                 },
                 
@@ -1319,7 +1430,8 @@
                             id: 'p' + Date.now(),
                             name: form.memberName.value,
                             role: form.memberRole.value,
-                            phone: form.memberPhone.value
+                            phone: form.memberPhone.value,
+                            photo: app.elements.memberPhotoPreview.src || null
                         };
                         db.addMember(newMember);
                         app.render.members();
@@ -1338,7 +1450,8 @@
                             title: form.decisionTitle.value,
                             responsible: form.decisionResponsible.value,
                             status: form.decisionStatus.value,
-                            details: form.decisionDetails.value
+                            details: form.decisionDetails.value,
+                            photos: []
                         };
                         db.addDecision(newDecision);
                         app.render.decisions();
@@ -1353,7 +1466,7 @@
                         e.preventDefault();
                         const form = app.elements.addPhotoForm;
                         const meetingId = form.elements['details-meeting-id'].value;
-                        const photoFile = form.elements['newPhoto'].files[0];
+                        const photoFile = form.elements['newMeetingPhoto'].files[0];
                         
                         if (photoFile) {
                             const reader = new FileReader();
@@ -1372,6 +1485,30 @@
                             app.toast.show('कृपया एक तस्वीर चुनें।');
                         }
                     },
+                    
+                    // निर्णय विवरण में नई तस्वीर सबमिट करें
+                    submitAnotherPhotoToDecision: function(e) {
+                        e.preventDefault();
+                        const form = app.elements.addDecisionPhotoForm;
+                        const decisionId = form.elements['details-decision-id'].value;
+                        const photoFile = form.elements['newDecisionPhoto'].files[0];
+                        
+                        if (photoFile) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const photoData = e.target.result;
+                                db.addPhotoToDecision(decisionId, photoData);
+                                // मोडल को रिफ्रेश करें
+                                const updatedDecision = db.getDecisionById(decisionId);
+                                app.render.decisionDetails(updatedDecision);
+                                form.reset();
+                                app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                            };
+                            reader.readAsDataURL(photoFile);
+                        } else {
+                            app.toast.show('कृपया एक तस्वीर चुनें।');
+                        }
+                    },
 
                     // स्टेटस अपडेट
                     updateDecisionStatus: function(id, newStatus, selectElement) {
@@ -1381,14 +1518,14 @@
                         app.toast.show('स्टेटस अपडेट किया गया!');
                     },
                     
-                    // फोटो प्रीव्यू (नई मीटिंग फॉर्म के लिए)
-                    previewPhoto: function(event) {
+                    // फोटो प्रीव्यू (जेनेरिक)
+                    previewPhoto: function(event, previewElement) {
                         const file = event.target.files[0];
                         if (file) {
                             const reader = new FileReader();
                             reader.onload = (e) => {
-                                app.elements.photoPreview.src = e.target.result;
-                                app.elements.photoPreview.style.display = 'block';
+                                previewElement.src = e.target.result;
+                                previewElement.style.display = 'block';
                             };
                             reader.readAsDataURL(file);
                         }
@@ -1400,6 +1537,15 @@
                         if (meeting) {
                             app.render.meetingDetails(meeting);
                             app.modal.show('meeting-details');
+                        }
+                    },
+                    
+                    // निर्णय विवरण दिखाएं
+                    showDecisionDetails: function(id) {
+                        const decision = db.getDecisionById(id);
+                        if (decision) {
+                            app.render.decisionDetails(decision);
+                            app.modal.show('decision-details');
                         }
                     },
                     
