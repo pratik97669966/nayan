@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JAS Mitra</title>
     
+    <!-- Favicon (Favicon) - यह एक प्लेसहोल्डर है, अपनी favicon.ico फ़ाइल से बदलें -->
+    <link id="favicon" rel="icon" href="favicon.ico" type="image/x-icon">
+    
     <!-- Google Fonts - Noto Sans (Hindi + Latin) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,17 +98,20 @@
             align-items: center;
         }
         
+        /* नया: ऐप लोगो */
+        header .logo-img {
+            height: 32px;
+            width: 32px;
+            border-radius: var(--radius-sm);
+            margin-right: 10px;
+            object-fit: cover;
+            vertical-align: middle;
+        }
+        
         header .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
-        }
-        
-        header .logo-icon {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-right: 8px;
-            vertical-align: middle;
         }
 
         /* --- 4. मुख्य कंटेंट (पेज) --- */
@@ -360,6 +366,49 @@
             font-size: 0.8rem;
             color: var(--on-surface-variant);
         }
+        
+        /* नया: क्रेडिट कार्ड स्टाइल */
+        .credits-card .credits-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .credits-card .profile-image {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 2px solid var(--primary-container);
+            background-color: var(--surface-variant);
+        }
+        .credits-card .profile-details h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--on-surface);
+            margin: 0;
+        }
+        .credits-card .profile-details p {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            line-height: 1.4;
+            margin: 0;
+        }
+        .credits-taglines {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--surface-variant);
+            text-align: center;
+        }
+        .credits-taglines .tagline1 {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .credits-taglines .tagline2 {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            margin-top: 4px;
+        }
 
         /* --- 9. मीटिंग और सदस्य कार्ड --- */
         .meeting-card {
@@ -401,6 +450,7 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
+            flex-shrink: 0;
         }
         .member-card .info h3 {
             font-size: 1.1rem;
@@ -414,6 +464,7 @@
             margin-left: auto;
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
         }
         .member-card .actions a {
             color: var(--primary);
@@ -680,7 +731,8 @@
 
         <!-- ===== 2. हेडर (टॉप ऐप बार) ===== -->
         <header>
-            <span class="material-icons-outlined logo-icon">groups</span>
+            <!-- हेडर लोगो अपडेट किया गया -->
+            <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
             <span class="logo">JAS Mitra</span>
         </header>
 
@@ -716,6 +768,22 @@
                 <div class="card dashboard-pending-feed">
                     <div id="dashboard-feed-list">
                         <!-- JS द्वारा फीड आइटम यहां भरे जाएंगे -->
+                    </div>
+                </div>
+                
+                <!-- नया: ऐप क्रेडिट कार्ड -->
+                <h3 class="sub-section-title">ऐप क्रेडिट</h3>
+                <div class="card credits-card">
+                    <div class="credits-profile">
+                        <img src="nayan.png" alt="Nayan Bhiogade" class="profile-image" onerror="this.src='https://placehold.co/64x64/E0E4E2/404946?text=NB'; this.onerror=null;">
+                        <div class="profile-details">
+                            <h3>Nayan Bhiogade</h3>
+                            <p>Gandhi fellow<br>(Piramal swasthya)</p>
+                        </div>
+                    </div>
+                    <div class="credits-taglines">
+                        <p class="tagline1">#आरोग्यम_धनसंपदा</p>
+                        <p class="tagline2">Made with ❤️ by Piramal</p>
                     </div>
                 </div>
             </div>
@@ -990,7 +1058,7 @@
                     } catch (e) {
                         if (e.name === 'QuotaExceededError') {
                             console.error('Storage quota exceeded! Cannot save data.');
-                            alert('Storage Error: Cannot save data. The local storage is full.');
+                            app.toast.show('Error: Storage full. Cannot save.', true);
                         } else {
                             console.error('Failed to save data:', e);
                         }
@@ -1119,6 +1187,14 @@
                 
                 // ऐप शुरू करें
                 init: function() {
+                    // फेविकॉन प्लेसहोल्डर सेट करें (यदि असली मौजूद नहीं है)
+                    const favicon = document.getElementById('favicon');
+                    const testFavicon = new Image();
+                    testFavicon.onerror = () => {
+                        favicon.href = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>➕</text></svg>';
+                    };
+                    testFavicon.src = 'favicon.ico';
+                
                     db.init(); // डेटाबेस शुरू करें
                     this.addEventListeners(); // सभी बटन लिस्नर जोड़ें
                     this.render.all(); // सभी पेज रेंडर करें
@@ -1618,11 +1694,13 @@
                         this.compressImage(file, (compressedData) => {
                             inputElement.dataset.compressedData = compressedData;
                             app.toast.show('Photo ready to save!');
+                        }, (error) => {
+                            app.toast.show(error, true);
                         });
                     },
                     
                     // नया: इमेज कंप्रेशन फ़ंक्शन
-                    compressImage: function(file, callback) {
+                    compressImage: function(file, callback, errorCallback) {
                         const MAX_WIDTH = 1024;
                         const MAX_HEIGHT = 1024;
                         const MIME_TYPE = "image/jpeg";
@@ -1654,9 +1732,22 @@
                                 ctx.drawImage(img, 0, 0, width, height);
                                 
                                 const compressedData = canvas.toDataURL(MIME_TYPE, QUALITY);
+                                
+                                // localStorage की सीमा जांचें
+                                if (compressedData.length > 500000) { // ~0.5MB
+                                    if(errorCallback) errorCallback('Error: Image too large to save.');
+                                    return;
+                                }
+                                
                                 callback(compressedData);
                             };
+                            img.onerror = () => {
+                                if(errorCallback) errorCallback('Error: Invalid image file.');
+                            };
                             img.src = e.target.result;
+                        };
+                        reader.onerror = () => {
+                             if(errorCallback) errorCallback('Error: Could not read image file.');
                         };
                         reader.readAsDataURL(file);
                     },
@@ -1686,7 +1777,7 @@
                     },
                     
                     share: function(agenda) {
-                        const text = `*JAS मित्र बैठक सूचना*\n\n*विषय:* ${agenda}\n\nयह रिपोर्ट JAS मित्र ऐप के माध्यम से साझा की गई है।`;
+                        const text = `*JAS मित्र सूचना*\n\n*विषय:* ${agenda}\n\nJAS मित्र ऐप से।`;
                         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                         window.open(url, '_blank');
                     },
@@ -1698,10 +1789,13 @@
                 
                 // --- 7. टोस्ट नोटिफिकेशन ---
                 toast: {
-                    show: function(message) {
+                    show: function(message, isError = false) {
                         const toast = document.createElement('div');
                         toast.className = 'toast';
                         toast.textContent = message;
+                        if (isError) {
+                            toast.style.backgroundColor = '#D32F2F'; // त्रुटि के लिए लाल
+                        }
                         document.getElementById('toast-container').appendChild(toast);
                         
                         setTimeout(() => toast.classList.add('show'), 10);
