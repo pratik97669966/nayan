@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAS Mitra</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. Grundlegende Einrichtung & Variablen --- */
+        :root {
+            --primary-color: #2A9D8F;
+            --accent-color: #E9C46A;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --text-light: #666;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius-md: 12px;
+            --border-radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- 2. App-Struktur (Header, Main, Footer) --- */
+        #app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        header .back-btn {
+            position: absolute;
+            left: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: none; /* JS द्वारा दिखाया गया */
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* पेज (स्क्रीन) प्रबंधन */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* --- 3. Allgemeine Komponenten (Buttons, Cards) --- */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #248a7d;
+        }
+        
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background-color: #d4b260;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            margin-right: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* --- 4. Formularelemente --- */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        #photoPreview {
+            width: 100%;
+            max-width: 200px;
+            margin-top: 10px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #ddd;
+            display: none; /* JS द्वारा दिखाया गया */
+        }
+        
+        /* --- 5. Spezifische Sektionen --- */
+
+        /* 🏠 होम स्क्रीन (Home Screen) */
+        #pageHome .welcome-card {
+            text-align: center;
+            padding: 25px;
+        }
+        #pageHome h2 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        #pageHome .welcome-text {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+        #pageHome .nav-buttons {
+            display: grid;
+            gap: 15px;
+        }
+        #pageHome .nav-buttons .btn {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* 📅 बैठक सूची (Meetings List) */
+        .meeting-card {
+            border-left: 5px solid var(--primary-color);
+        }
+        .meeting-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 10px;
+            background-color: #eee;
+        }
+        .meeting-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .meeting-card .meta {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        .meeting-card .agenda {
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .meeting-card .actions {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        /* 👥 सदस्य सूची (Members List) */
+        .member-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .member-card .info {
+            flex-grow: 1;
+        }
+        .member-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .member-card .role {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .member-card .contact {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .member-card .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .status-active {
+            color: green;
+            font-weight: 700;
+        }
+        .status-inactive {
+            color: red;
+            font-weight: 700;
+        }
+
+        /* 📋 निर्णय सूची (Decisions List) */
+        .decision-card {
+            border-left: 5px solid var(--accent-color);
+        }
+        .decision-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .decision-card .summary {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+        .decision-card .details {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+        }
+        .status-pending { background-color: #f0ad4e; }
+        .status-in-progress { background-color: #0275d8; }
+        .status-completed { background-color: #5cb85c; }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <header>
+            <button class="back-btn" id="backButton">&larr;</button>
+            <h1>JAS मित्र</h1>
+        </header>
+
+        <main>
+
+            <div id="pageHome" class="page active">
+                <div class="card welcome-card">
+                    <h2>सामुदायिक आरोग्य समिती - स्वस्थ गाँव, सशक्त समुदाय</h2>
+                    <p class="welcome-text">
+                        JAS मित्र में आपका स्वागत है। यह मंच सामुदायिक स्वास्थ्य बैठकों में पारदर्शिता और टीम वर्क को बढ़ावा देता है।
+                    </p>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="btn btn-primary" data-target="pageAddMeeting">
+                        ➕ नई बैठक जोड़ें
+                    </button>
+                    <button class="btn btn-primary" data-target="pageMeetings">
+                        📅 बैठकें देखें
+                    </button>
+                    <button class="btn btn-primary" data-target="pageMembers">
+                        👥 सदस्य देखें
+                    </button>
+                    <button class="btn btn-primary" data-target="pageDecisions">
+                        📋 निर्णय देखें
+                    </button>
+                </div>
+            </div>
+
+            <div id="pageMeetings" class="page">
+                <h2 class="section-title">सभी बैठकें</h2>
+                
+                <div class="card meeting-card">
+                    <img src="https://via.placeholder.com/400x150.png?text=Meeting+Photo" alt="Meeting Photo">
+                    <h3>मासिक स्वास्थ्य शिविर की योजना</h3>
+                    <p class="meta">दिनांक: 25-10-2025 | स्थान: पंचायत भवन</p>
+                    <p class="agenda">
+                        <strong>एजेंडा:</strong> आगामी स्वास्थ्य शिविर के लिए डॉक्टरों और दवाओं की व्यवस्था करना।
+                    </p>
+                    <div class="actions">
+                        <button class="btn-icon" id="btnShareMeeting">
+                            🔗 शेयर (WhatsApp)
+                        </button>
+                        <button class="btn-icon" id="btnDownloadReport">
+                            📄 डाउनलोड (PDF)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card meeting-card">
+                    <img src="https://via.placeholder.com/400x150.png?text=Meeting+Photo+2" alt="Meeting Photo">
+                    <h3>स्वच्छता अभियान की समीक्षा</h3>
+                    <p class="meta">दिनांक: 15-10-2025 | स्थान: ग्राम सचिवालय</p>
+                    <p class="agenda">
+                        <strong>एजेंडा:</strong> गाँव में सफाई की प्रगति पर चर्चा और अगले कदमों की योजना।
+                    </p>
+                    <div class="actions">
+                        <button class="btn-icon" onclick="shareMeeting('स्वच्छता अभियान की समीक्षा')">🔗 शेयर (WhatsApp)</button>
+                        <button class="btn-icon" onclick="downloadReport()">📄 डाउनलोड (PDF)</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="pageAddMeeting" class="page">
+                <h2 class="section-title">नई बैठक जोड़ें</h2>
+                <form id="meetingForm" class="card">
+                    <div class="form-group">
+                        <label for="meetingDate">दिनांक</label>
+                        <input type="date" id="meetingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingVenue">स्थान</label>
+                        <input type="text" id="meetingVenue" placeholder="जैसे: पंचायत भवन" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingAgenda">एजेंडा</label>
+                        <textarea id="meetingAgenda" placeholder="बैठक का मुख्य विषय..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingDecisions">लिए गए निर्णय</label>
+                        <textarea id="meetingDecisions" placeholder="चर्चा के बाद क्या निर्णय लिए गए..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingPhoto">फोटो अपलोड करें (कैमरा)</label>
+                        <input type="file" id="meetingPhoto" accept="image/*" capture="camera">
+                        <img id="photoPreview" alt="फोटो प्रीव्यू">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">बैठक सेव करें</button>
+                </form>
+            </div>
+
+            <div id="pageMembers" class="page">
+                <h2 class="section-title">समिति के सदस्य</h2>
+
+                <div class="card member-card">
+                    <div class="info">
+                        <h3>श्री. रमेश पाटिल</h3>
+                        <p class="role">अध्यक्ष (सरपंच)</p>
+                        <p class="contact">9876543210 | <span class="status-active">सक्रिय</span></p>
+                    </div>
+                    <div class="actions">
+                        <a href="tel:9876543210" class="btn-icon btn-small">📞 कॉल</a>
+                        <a href="sms:9876543210" class="btn-icon btn-small">💬 संदेश</a>
+                    </div>
+                </div>
+
+                <div class="card member-card">
+                    <div class="info">
+                        <h3>श्रीमती. सीता देवी</h3>
+                        <p class="role">सचिव (ANM)</p>
+                        <p class="contact">9123456789 | <span class="status-active">सक्रिय</span></p>
+                    </div>
+                    <div class="actions">
+                        <a href="tel:9123456789" class="btn-icon btn-small">📞 कॉल</a>
+                        <a href="sms:9123456789" class="btn-icon btn-small">💬 संदेश</a>
+                    </div>
+                </div>
+                
+                <div class="card member-card">
+                    <div class="info">
+                        <h3>मोहन कुमार</h3>
+                        <p class="role">सदस्य (आशा)</p>
+                        <p class="contact">9988776655 | <span class="status-inactive">निष्क्रिय</span></p>
+                    </div>
+                    <div class="actions">
+                        <a href="tel:9988776655" class="btn-icon btn-small">📞 कॉल</a>
+                        <a href="sms:9988776655" class="btn-icon btn-small">💬 संदेश</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="pageDecisions" class="page">
+                <h2 class="section-title">प्रस्ताव और निर्णय</h2>
+                
+                <div class="card decision-card">
+                    <h3>पानी की टंकी की सफाई</h3>
+                    <span class="status-badge status-completed">पूर्ण</span>
+                    <p class="summary">
+                        गाँव की मुख्य पानी की टंकी की सफाई का प्रस्ताव पास हुआ।
+                    </p>
+                    <p class="details">
+                        <strong>जिम्मेदार:</strong> रमेश पाटिल | <strong>निर्णय तिथि:</strong> 20-10-2025
+                    </p>
+                </div>
+                
+                <div class="card decision-card">
+                    <h3>मच्छर फॉगिंग मशीन</h3>
+                    <span class="status-badge status-in-progress">जारी है</span>
+                    <p class="summary">
+                        मलेरिया रोकथाम के लिए एक नई फॉगिंग मशीन खरीदने का निर्णय।
+                    </p>
+                    <p class="details">
+                        <strong>जिम्मेदार:</strong> सीता देवी | <strong>निर्णय तिथि:</strong> 25-10-2025
+                    </p>
+                </div>
+
+                <div class="card decision-card">
+                    <h3>पोषण वाटिका निर्माण</h3>
+                    <span class="status-badge status-pending">लंबित</span>
+                    <p class="summary">
+                        आंगनवाड़ी केंद्र पर पोषण वाटिका (किचन गार्डन) का निर्माण।
+                    </p>
+                    <p class="details">
+                        <strong>जिम्मेदार:</strong> मोहन कुमार | <strong>निर्णय तिथि:</strong> 25-10-2025
+                    </p>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer>
+            © Nayan Bhiogade द्वारा निर्मित
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const pages = document.querySelectorAll('.page');
+            const navButtons = document.querySelectorAll('[data-target]');
+            const backButton = document.getElementById('backButton');
+            const appHeader = document.querySelector('header h1');
+
+            // पेज नेविगेशन फ़ंक्शन
+            function showPage(pageId) {
+                // सभी पेज छिपाएं
+                pages.forEach(page => page.classList.remove('active'));
+                
+                // लक्षित पेज दिखाएं
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                }
+                
+                // बैक बटन और हेडर को मैनेज करें
+                if (pageId === 'pageHome') {
+                    backButton.style.display = 'none';
+                    appHeader.textContent = 'JAS मित्र';
+                } else {
+                    backButton.style.display = 'block';
+                    // पेज के अनुसार हेडर बदलें
+                    if(pageId === 'pageMeetings') appHeader.textContent = 'बैठकें';
+                    else if(pageId === 'pageAddMeeting') appHeader.textContent = 'नई बैठक';
+                    else if(pageId === 'pageMembers') appHeader.textContent = 'सदस्य';
+                    else if(pageId === 'pageDecisions') appHeader.textContent = 'निर्णय';
+                }
+                window.scrollTo(0, 0); // हर पेज चेंज पर टॉप पर स्क्रॉल करें
+            }
+
+            // सभी नेविगेशन बटन के लिए क्लिक लिस्नर
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetPageId = button.getAttribute('data-target');
+                    showPage(targetPageId);
+                });
+            });
+
+            // बैक बटन लिस्नर
+            backButton.addEventListener('click', () => {
+                showPage('pageHome');
+            });
+
+            // --- फॉर्म सबमिशन (प्रोटोटाइप) ---
+            const meetingForm = document.getElementById('meetingForm');
+            meetingForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // फॉर्म को सबमिट होने से रोकें
+                alert('बैठक सेव की गई! (प्रोटोटाइप)\n\nअसली ऐप में यह डेटा सर्वर पर सेव होगा।');
+                // असली ऐप में, यहां डेटाबेस में सेव करने का कोड होगा
+                // सेव करने के बाद, मीटिंग लिस्ट पेज पर वापस जाएं
+                showPage('pageMeetings');
+                meetingForm.reset(); // फॉर्म रीसेट करें
+                document.getElementById('photoPreview').style.display = 'none'; // प्रीव्यू छिपाएं
+            });
+
+            // --- फोटो प्रीव्यू ---
+            const photoInput = document.getElementById('meetingPhoto');
+            const photoPreview = document.getElementById('photoPreview');
+            
+            photoInput.addEventListener('change', (event) => {
+                if (event.target.files && event.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+            });
+
+            // --- शेयर और डाउनलोड फ़ंक्शन (प्रोटोटाइप) ---
+            
+            // यह फ़ंक्शन "onclick" के माध्यम से भी कॉल किया जा सकता है
+            window.shareMeeting = (meetingTitle) => {
+                const meetingDetails = `*JAS मित्र बैठक सूचना*\n\n*विषय:* ${meetingTitle}\n*स्थान:* पंचायत भवन\n\nयह रिपोर्ट JAS मित्र ऐप के माध्यम से साझा की गई है।`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(meetingDetails)}`;
+                window.open(whatsappUrl, '_blank');
+            };
+
+            window.downloadReport = () => {
+                alert('प्रोटोटाइप सूचना:\n\nअसली ऐप में, यह बटन सर्वर से एक PDF या Excel फ़ाइल जनरेट और डाउनलोड करेगा।');
+            };
+
+            // पहले कार्ड के बटन के लिए लिस्नर
+            const btnShare = document.getElementById('btnShareMeeting');
+            if(btnShare) {
+                btnShare.addEventListener('click', () => shareMeeting('मासिक स्वास्थ्य शिविर की योजना'));
+            }
+            const btnDownload = document.getElementById('btnDownloadReport');
+            if(btnDownload) {
+                btnDownload.addEventListener('click', downloadReport);
+            }
+
+            // ऐप को होम पेज पर शुरू करें
+            showPage('pageHome');
+        });
+    </script>
+
+</body>
+</html>
