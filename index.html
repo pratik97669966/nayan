@@ -10,8 +10,8 @@
     <link id="favicon" rel="icon" href="favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts - Noto Sans (Hindi + Latin) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https.googleapis.com">
+    <link rel="preconnect" href="https.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Material Icons - Filled और Outlined दोनों को इम्पोर्ट करें -->
@@ -20,6 +20,8 @@
     <!-- jsPDF Libraries for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <!-- FIX: हिंदी टेक्स्ट को PDF में रेंडर करने के लिए html2canvas जोड़ा गया -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         /* --- 1. मटेरियल 3 कलर पैलेट और बेस --- */
@@ -1169,7 +1171,13 @@
             <img id="fullscreen-image" src="" alt="Fullscreen Image">
         </div>
 
+    </div> <!-- End of app-container -->
+
+    <!-- ===== (नया) PDF रेंडरिंग के लिए हिडन कंटेनर ===== -->
+    <div id="pdf-render-container"
+        style="position: absolute; left: -9999px; top: 0; background: white; padding: 20px; width: 595px; /* A4 width in points */ font-family: 'Noto Sans', sans-serif; color: #000; line-height: 1.5;">
     </div>
+
 
     <!-- ===== 10. जावास्क्रिप्ट (ऐप लॉजिक) ===== -->
     <script>
@@ -1414,6 +1422,7 @@
                     });
 
                     els.btnSharePdf.addEventListener('click', () => {
+                        // FIX: यह अब एक async फ़ंक्शन है, लेकिन हम इसे "फायर एंड फॉरगेट" कर सकते हैं
                         this.actions.generatePdf(app.currentShareId, app.currentShareType);
                         this.modal.hide();
                     });
@@ -1985,7 +1994,7 @@
                             text += `*Meeting Agenda:* ${meeting.agenda}\n`;
                             text += `*Date:* ${meeting.date}\n`;
                             text += `*Decisions:* ${meeting.decisions || 'N/A'}\n`;
-                            text += `\n*${meeting.photos.length} photo(s) available in the app.*`;
+                            text += `\n*${(meeting.photos || []).length} photo(s) available in the app.*`;
                         } else {
                             const decision = db.getDecisionById(id);
                             if (!decision) return;
@@ -1993,103 +2002,117 @@
                             text += `*Status:* ${decision.status}\n`;
                             text += `*Responsible:* ${decision.responsible}\n`;
                             text += `*Notes:* ${decision.details || 'N/A'}\n`;
-                            text += `\n*${decision.photos.length} photo(s) available in the app.*`;
+                            text += `\n*${(decision.photos || []).length} photo(s) available in the app.*`;
                         }
 
                         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                         window.open(url, '_blank');
                     },
 
-                    // PDF जनरेट करें
-                    generatePdf: function (id, type) {
+                    // FIX: PDF जनरेट करें (html2canvas के साथ अपडेट किया गया)
+                    generatePdf: async function (id, type) {
                         app.toast.show('Generating PDF...');
-                        const doc = new jsPDF();
+                        
+                        // A4 size in points (pt)
+                        const doc = new jsPDF({
+                            unit: 'pt',
+                            format: 'a4'
+                        });
 
-                        // महत्वपूर्ण नोट: jsPDF डिफ़ॉल्ट रूप से हिंदी का समर्थन नहीं करता है।
-                        // टेक्स्ट अंग्रेजी में लिखा जाएगा या '???' के रूप में दिखाई देगा।
-                        // पूर्ण हिंदी समर्थन के लिए एक कस्टम फॉन्ट जोड़ना होगा, जो बहुत जटिल है।
-
-                        doc.setFont('helvetica', 'bold');
-                        doc.text("JAS Mitra Report", 14, 20);
-                        doc.setFont('helvetica', 'normal');
-
-                        let y = 30; // PDF में वर्टिकल स्थिति
+                        // 1. रेंडरिंग के लिए HTML तैयार करें
+                        const renderContainer = document.getElementById('pdf-render-container');
+                        let reportHtml = '';
+                        let fileName = 'JAS_Mitra_Report.pdf';
 
                         if (type === 'meeting') {
                             const meeting = db.getMeetingById(id);
                             if (!meeting) return;
+                            fileName = `JAS_Mitra_Meeting_${meeting.id}.pdf`;
 
-                            doc.setFontSize(14);
-                            doc.text(`Agenda: ${meeting.agenda}`, 14, y);
-                            y += 10;
+                            reportHtml = `
+                                <h1 style="font-size: 18pt; color: #2A9D8F; font-weight: bold;">JAS Mitra Report</h1>
+                                <h2 style="font-size: 14pt; font-weight: bold; margin-top: 15px;">बैठक: ${meeting.agenda}</h2>
+                                <p style="font-size: 10pt; margin-top: 10px;"><b>दिनांक:</b> ${meeting.date}</p>
+                                <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">लिए गए निर्णय:</h3>
+                                <p style="font-size: 10pt; white-space: pre-wrap; word-wrap: break-word;">${meeting.decisions || 'N/A'}</p>
+                                <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">तस्वीरें:</h3>
+                            `;
 
-                            doc.setFontSize(10);
-                            doc.text(`Date: ${meeting.date}`, 14, y);
-                            y += 10;
-
-                            doc.setFontSize(12);
-                            doc.text("Decisions:", 14, y);
-                            y += 7;
-
-                            doc.setFontSize(10);
-                            // लंबे टेक्स्ट को रैप करें
-                            const decisionText = doc.splitTextToSize(meeting.decisions || 'N/A', 180);
-                            doc.text(decisionText, 14, y);
-                            y += (decisionText.length * 5) + 10; // टेक्स्ट की ऊंचाई के आधार पर y बढ़ाएं
-
-                            // पहली तस्वीर जोड़ें
-                            if (meeting.photos && meeting.photos[0]) {
-                                try {
-                                    doc.text("Photo 1:", 14, y);
-                                    y += 5;
-                                    const imgData = meeting.photos[0];
-                                    doc.addImage(imgData, 'JPEG', 14, y, 180, 100); // 180mm चौड़ा, 100mm ऊंचा
-                                } catch (e) {
-                                    console.error("PDF image error:", e);
-                                    doc.text("Could not add image (format error).", 14, y);
-                                }
+                            // तस्वीरें जोड़ें (Base64 data URLs)
+                            if (meeting.photos && meeting.photos.length > 0) {
+                                meeting.photos.forEach((photo, index) => {
+                                    reportHtml += `<img src="${photo}" style="width: 100%; max-width: 550px; margin-top: 10px; border: 1px solid #eee; break-inside: avoid;">`;
+                                });
+                            } else {
+                                reportHtml += '<p style="font-size: 10pt;">कोई तस्वीर नहीं है।</p>';
                             }
-                            doc.save(`JAS_Mitra_Meeting_${meeting.id}.pdf`);
 
-                        } else {
+                        } else { // 'decision'
                             const decision = db.getDecisionById(id);
                             if (!decision) return;
+                            fileName = `JAS_Mitra_Decision_${decision.id}.pdf`;
 
-                            doc.setFontSize(14);
-                            doc.text(`Decision: ${decision.title}`, 14, y);
-                            y += 10;
+                            reportHtml = `
+                                <h1 style="font-size: 18pt; color: #2A9D8F; font-weight: bold;">JAS Mitra Report</h1>
+                                <h2 style="font-size: 14pt; font-weight: bold; margin-top: 15px;">निर्णय: ${decision.title}</h2>
+                                <p style="font-size: 10pt; margin-top: 10px;"><b>जिम्मेदार:</b> ${decision.responsible}</p>
+                                <p style="font-size: 10pt; margin-top: 5px;"><b>स्थिति:</b> ${decision.status}</p>
+                                <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">विवरण / नोट्स:</h3>
+                                <p style="font-size: 10pt; white-space: pre-wrap; word-wrap: break-word;">${decision.details || 'N/A'}</p>
+                                <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">तस्वीरें:</h3>
+                            `;
 
-                            doc.setFontSize(10);
-                            doc.text(`Status: ${decision.status}`, 14, y);
-                            y += 7;
-                            doc.text(`Responsible: ${decision.responsible}`, 14, y);
-                            y += 10;
-
-                            doc.setFontSize(12);
-                            doc.text("Notes:", 14, y);
-                            y += 7;
-
-                            doc.setFontSize(10);
-                            const notesText = doc.splitTextToSize(decision.details || 'N/A', 180);
-                            doc.text(notesText, 14, y);
-                            y += (notesText.length * 5) + 10;
-
-                            // पहली तस्वीर जोड़ें
-                            if (decision.photos && decision.photos[0]) {
-                                try {
-                                    doc.text("Photo 1:", 14, y);
-                                    y += 5;
-                                    const imgData = decision.photos[0];
-                                    doc.addImage(imgData, 'JPEG', 14, y, 180, 100);
-                                } catch (e) {
-                                    console.error("PDF image error:", e);
-                                    doc.text("Could not add image (format error).", 14, y);
-                                }
+                            // तस्वीरें जोड़ें
+                            if (decision.photos && decision.photos.length > 0) {
+                                decision.photos.forEach((photo, index) => {
+                                    reportHtml += `<img src="${photo}" style="width: 100%; max-width: 550px; margin-top: 10px; border: 1px solid #eee; break-inside: avoid;">`;
+                                });
+                            } else {
+                                reportHtml += '<p style="font-size: 10pt;">कोई तस्वीर नहीं है।</p>';
                             }
-                            doc.save(`JAS_Mitra_Decision_${decision.id}.pdf`);
                         }
 
-                        app.toast.show('PDF Downloaded!');
+                        renderContainer.innerHTML = reportHtml;
+
+                        // 2. html2canvas का उपयोग करके DOM को कैनवास में बदलें
+                        try {
+                            const canvas = await html2canvas(renderContainer, {
+                                scale: 2, // बेहतर रिज़ॉल्यूशन के लिए
+                                useCORS: true // क्रॉस-ओरिजिन तस्वीरों के लिए (जैसे picsum)
+                            });
+
+                            const imgData = canvas.toDataURL('image/png');
+                            const imgProps = doc.getImageProperties(imgData);
+                            const pdfWidth = doc.internal.pageSize.getWidth();
+                            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                            let heightLeft = pdfHeight;
+                            let position = 0;
+                            const pageHeight = doc.internal.pageSize.getHeight();
+
+                            // 3. कैनवास इमेज को PDF में जोड़ें
+                            doc.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                            heightLeft -= pageHeight;
+
+                            // यदि कंटेंट लंबा है तो नए पेज जोड़ें
+                            while (heightLeft > 0) {
+                                position = -heightLeft; // पिछले पेजों की ऊंचाई को घटाएं
+                                doc.addPage();
+                                doc.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                                heightLeft -= pageHeight;
+                            }
+
+                            // 4. PDF सेव करें
+                            doc.save(fileName);
+                            app.toast.show('PDF Downloaded!');
+
+                        } catch (e) {
+                            console.error("Error generating PDF with html2canvas:", e);
+                            app.toast.show('Error generating PDF.', true);
+                        }
+
+                        // 5. हिडन कंटेनर को साफ़ करें
+                        renderContainer.innerHTML = '';
                     }
                 },
 
