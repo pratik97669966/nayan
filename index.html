@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JAS Mitra</title>
-    
-    <!-- Favicon (Favicon) - यह एक प्लेसहोल्डर है, अपनी favicon.ico फ़ाइल से बदलें -->
+
+    <!-- Favicon (Favicon) - logo.png का उपयोग करने के लिए अपडेट किया गया -->
     <link id="favicon" rel="icon" href="favicon.ico" type="image/x-icon">
-    
     <!-- Google Fonts - Noto Sans (Hindi + Latin) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Material Icons - Filled और Outlined दोनों को इम्पोर्ट करें -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
 
@@ -30,7 +30,7 @@
             --on-secondary: #FFFFFF;
             --secondary-container: #FDF3D1;
             --on-secondary-container: #261A00;
-            
+
             /* न्यूट्रल रंग (Background, Cards, Text) */
             --background: #F4F7F6;
             --on-background: #1A1C1B;
@@ -46,9 +46,9 @@
 
             /* अन्य */
             --outline: #707976;
-            --shadow-1: 0 1px 2px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-2: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-3: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
             --radius-sm: 8px;
             --radius-md: 12px;
@@ -71,7 +71,8 @@
             background-color: var(--background);
             color: var(--on-background);
             line-height: 1.6;
-            -webkit-tap-highlight-color: transparent; /* मोबाइल पर क्लिक फ्लैश हटाता है */
+            -webkit-tap-highlight-color: transparent;
+            /* मोबाइल पर क्लिक फ्लैश हटाता है */
         }
 
         /* --- 2. मुख्य ऐप लेआउट --- */
@@ -82,14 +83,14 @@
             background-color: var(--surface);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         /* --- 3. हेडर (टॉप ऐप बार) --- */
         header {
             background-color: var(--surface);
             color: var(--primary);
-            padding: 16px 20px;
+            padding: 8px 10px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -97,17 +98,17 @@
             display: flex;
             align-items: center;
         }
-        
+
         /* नया: ऐप लोगो */
         header .logo-img {
-            height: 32px;
-            width: 32px;
+            height: 42px;
+            width: 42px;
             border-radius: var(--radius-sm);
             margin-right: 10px;
             object-fit: cover;
             vertical-align: middle;
         }
-        
+
         header .logo {
             font-size: 1.5rem;
             font-weight: 700;
@@ -118,19 +119,29 @@
         main {
             flex-grow: 1;
             padding: 20px;
-            padding-bottom: 100px; /* बॉटम नेविगेशन के लिए जगह */
+            padding-bottom: 100px;
+            /* बॉटम नेविगेशन के लिए जगह */
         }
 
         .page {
             display: none;
             animation: fadeIn 0.3s ease-in-out;
         }
+
         .page.active {
             display: block;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .section-title {
@@ -139,7 +150,7 @@
             color: var(--on-background);
             margin-bottom: 20px;
         }
-        
+
         .sub-section-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -162,11 +173,14 @@
             border-top: 1px solid var(--surface-variant);
             display: flex;
             justify-content: space-around;
-            padding: 0 8px; /* किनारों पर थोड़ा पैडिंग */
+            padding: 0 8px;
+            /* किनारों पर थोड़ा पैडिंग */
             z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            height: 80px; /* मटेरियल 3 ऊंचाई */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            height: 80px;
+            /* मटेरियल 3 ऊंचाई */
         }
+
         .nav-btn {
             background: none;
             border: none;
@@ -174,13 +188,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* वर्टिकली सेंटर */
-            color: var(--on-surface-variant); /* निष्क्रिय रंग */
-            flex: 1; /* बराबर जगह बांटें */
+            justify-content: center;
+            /* वर्टिकली सेंटर */
+            color: var(--on-surface-variant);
+            /* निष्क्रिय रंग */
+            flex: 1;
+            /* बराबर जगह बांटें */
             height: 100%;
-            gap: 4px; /* आइकन और लेबल के बीच गैप */
+            gap: 4px;
+            /* आइकन और लेबल के बीच गैप */
             transition: color 0.2s ease-in-out;
         }
+
         .nav-indicator {
             width: 64px;
             height: 32px;
@@ -189,27 +208,37 @@
             align-items: center;
             justify-content: center;
             transition: background-color 0.2s ease-in-out;
-            background-color: transparent; /* डिफ़ॉल्ट रूप से पारदर्शी */
+            background-color: transparent;
+            /* डिफ़ॉल्ट रूप से पारदर्शी */
         }
+
         .nav-btn .material-icons,
         .nav-btn .material-icons-outlined {
             font-size: 24px;
             transition: color 0.2s ease-in-out;
         }
+
         .nav-label {
-            font-size: 0.75rem; /* 12px */
+            font-size: 0.75rem;
+            /* 12px */
             font-weight: 500;
             transition: color 0.2s ease-in-out;
         }
+
         /* सक्रिय (Active) स्थिति */
         .nav-btn.active {
-            color: var(--on-surface); /* सक्रिय लेबल टेक्स्ट */
+            color: var(--on-surface);
+            /* सक्रिय लेबल टेक्स्ट */
         }
+
         .nav-btn.active .nav-indicator {
-            background-color: var(--primary-container); /* पिल का रंग */
+            background-color: var(--primary-container);
+            /* पिल का रंग */
         }
+
         .nav-btn.active .material-icons {
-            color: var(--on-primary-container); /* सक्रिय आइकन का रंग */
+            color: var(--on-primary-container);
+            /* सक्रिय आइकन का रंग */
         }
 
         /* --- 6. फ्लोटिंग एक्शन बटन (FAB) --- */
@@ -232,12 +261,15 @@
             transition: all 0.3s ease;
             transform: scale(1);
         }
+
         #fab:hover {
             background-color: #248a7d;
         }
+
         #fab.hidden {
             transform: scale(0);
         }
+
         #fab .material-icons-outlined {
             font-size: 28px;
             transition: transform 0.2s ease-in-out;
@@ -251,9 +283,10 @@
             padding: 16px;
             margin-bottom: 20px;
             border: 1px solid var(--surface-variant);
-            position: relative; /* एडिट बटन के लिए */
+            position: relative;
+            /* एडिट बटन के लिए */
         }
-        
+
         .btn {
             display: block;
             width: 100%;
@@ -267,15 +300,17 @@
             text-decoration: none;
             transition: all 0.2s ease;
         }
+
         .btn-primary {
             background-color: var(--primary);
             color: var(--on-primary);
         }
+
         .btn-secondary {
             background-color: var(--secondary);
             color: var(--on-secondary-container);
         }
-        
+
         .btn-small-icon {
             background: none;
             border: 1px solid var(--primary);
@@ -289,7 +324,7 @@
             gap: 5px;
             font-weight: 500;
         }
-        
+
         .btn-icon-round {
             background: none;
             border: none;
@@ -298,6 +333,7 @@
             padding: 4px;
             border-radius: var(--radius-full);
         }
+
         .btn-icon-round:hover {
             background-color: var(--surface-variant);
         }
@@ -310,9 +346,11 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+
         #page-home .welcome-card h2 {
             font-size: 1.5rem;
         }
+
         #page-home .welcome-card p {
             font-size: 0.9rem;
             opacity: 0.9;
@@ -327,6 +365,7 @@
             background: var(--surface-variant);
             box-shadow: var(--shadow-2);
         }
+
         .slider-item {
             width: 100%;
             height: 100%;
@@ -336,6 +375,7 @@
             background-size: cover;
             background-position: center;
         }
+
         .slider-item.active {
             opacity: 1;
         }
@@ -345,6 +385,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
+
         .action-btn {
             background-color: var(--primary-container);
             color: var(--on-primary-container);
@@ -357,15 +398,17 @@
             transition: all 0.2s ease;
             border: none;
         }
+
         .action-btn:hover {
             box-shadow: var(--shadow-2);
         }
+
         .action-btn .material-icons-outlined {
             font-size: 28px;
             display: block;
             margin-bottom: 5px;
         }
-        
+
         .dashboard-pending-feed .feed-item {
             display: flex;
             align-items: center;
@@ -373,27 +416,32 @@
             padding: 10px;
             border-bottom: 1px solid var(--surface-variant);
         }
+
         .dashboard-pending-feed .feed-item:last-child {
             border-bottom: none;
         }
+
         .feed-item .icon {
             color: var(--status-pending-bg);
         }
+
         .feed-item .info p {
             font-size: 0.9rem;
             font-weight: 500;
         }
+
         .feed-item .info span {
             font-size: 0.8rem;
             color: var(--on-surface-variant);
         }
-        
+
         /* नया: क्रेडिट कार्ड स्टाइल */
         .credits-card .credits-profile {
             display: flex;
             align-items: center;
             gap: 15px;
         }
+
         .credits-card .profile-image {
             width: 64px;
             height: 64px;
@@ -402,29 +450,34 @@
             border: 2px solid var(--primary-container);
             background-color: var(--surface-variant);
         }
+
         .credits-card .profile-details h3 {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--on-surface);
             margin: 0;
         }
+
         .credits-card .profile-details p {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
             line-height: 1.4;
             margin: 0;
         }
+
         .credits-taglines {
             margin-top: 16px;
             padding-top: 16px;
             border-top: 1px solid var(--surface-variant);
             text-align: center;
         }
+
         .credits-taglines .tagline1 {
             font-weight: 700;
             color: var(--primary);
             font-size: 1.1rem;
         }
+
         .credits-taglines .tagline2 {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
@@ -433,8 +486,10 @@
 
         /* --- 9. मीटिंग और सदस्य कार्ड --- */
         .meeting-card {
-            cursor: pointer; /* क्लिक करने योग्य दिखाने के लिए */
+            cursor: pointer;
+            /* क्लिक करने योग्य दिखाने के लिए */
         }
+
         .meeting-card img {
             width: 100%;
             height: 180px;
@@ -444,11 +499,13 @@
             background-color: #eee;
             border: 1px solid var(--surface-variant);
         }
+
         .meeting-card h3 {
             font-size: 1.25rem;
             font-weight: 700;
             color: var(--on-surface);
         }
+
         .meeting-card .meta {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
@@ -460,6 +517,7 @@
             align-items: center;
             gap: 15px;
         }
+
         .member-card .profile-pic {
             width: 50px;
             height: 50px;
@@ -473,42 +531,49 @@
             font-size: 24px;
             flex-shrink: 0;
         }
+
         .member-card .info h3 {
             font-size: 1.1rem;
             font-weight: 700;
         }
+
         .member-card .info p {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
         }
+
         .member-card .actions {
             margin-left: auto;
             display: flex;
             gap: 8px;
             flex-shrink: 0;
         }
+
         .member-card .actions a {
             color: var(--primary);
             font-size: 24px;
             text-decoration: none;
         }
-        
+
         /* निर्णय कार्ड और स्टेटस */
         .decision-card {
             display: flex;
             flex-direction: column;
             gap: 5px;
-            padding-right: 40px; /* एडिट बटन के लिए जगह */
+            padding-right: 40px;
+            /* एडिट बटन के लिए जगह */
         }
+
         .decision-card h3 {
             font-size: 1.1rem;
             font-weight: 700;
         }
+
         .decision-card p {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
         }
-        
+
         .status-select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -521,11 +586,21 @@
             border: none;
             margin-top: 5px;
             cursor: pointer;
-            width: 120px; /* एक निश्चित चौड़ाई दें */
+            width: 120px;
+            /* एक निश्चित चौड़ाई दें */
         }
-        .status-select.status-pending { background-color: var(--status-pending-bg); }
-        .status-select.status-in-progress { background-color: var(--status-inprogress-bg); }
-        .status-select.status-completed { background-color: var(--status-completed-bg); }
+
+        .status-select.status-pending {
+            background-color: var(--status-pending-bg);
+        }
+
+        .status-select.status-in-progress {
+            background-color: var(--status-inprogress-bg);
+        }
+
+        .status-select.status-completed {
+            background-color: var(--status-completed-bg);
+        }
 
         .btn-edit-decision {
             position: absolute;
@@ -541,13 +616,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 200;
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .modal-container {
             position: fixed;
             bottom: 0;
@@ -566,23 +641,26 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        
-        .modal-container.visible, #modal-backdrop.visible {
+
+        .modal-container.visible,
+        #modal-backdrop.visible {
             display: block;
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
         }
+
         .modal-header h2 {
             font-size: 1.4rem;
             color: var(--on-surface);
         }
+
         .close-modal {
             background: none;
             border: none;
@@ -590,16 +668,18 @@
             color: var(--on-surface-variant);
             cursor: pointer;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
             color: var(--on-surface-variant);
         }
+
         .form-group input,
         .form-group textarea,
         .form-group select {
@@ -611,13 +691,14 @@
             font-family: 'Noto Sans', sans-serif;
             background: var(--surface);
         }
+
         .form-group input[type="file"] {
             border: 1px dashed var(--primary);
             padding: 10px;
             background: var(--primary-container);
             color: var(--on-primary-container);
         }
-        
+
         .preview-image {
             width: 100%;
             max-width: 200px;
@@ -626,30 +707,35 @@
             border: 1px solid var(--outline);
             display: none;
         }
-        
+
         /* --- 11. विवरण मोडल --- */
         .modal-body {
             padding-bottom: 20px;
         }
+
         .detail-item {
             margin-bottom: 15px;
         }
+
         .detail-item label {
             font-size: 0.8rem;
             font-weight: 500;
             color: var(--on-surface-variant);
             display: block;
         }
+
         .detail-item p {
             font-size: 1rem;
             color: var(--on-surface);
         }
+
         .photo-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
             margin-top: 10px;
         }
+
         .photo-gallery img {
             width: 100%;
             height: 100px;
@@ -658,11 +744,13 @@
             border: 1px solid var(--surface-variant);
             cursor: pointer;
         }
+
         .add-photo-form {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--surface-variant);
         }
+
         .add-photo-form .form-group {
             margin-bottom: 10px;
         }
@@ -679,6 +767,7 @@
             align-items: center;
             gap: 10px;
         }
+
         .toast {
             background: #333;
             color: white;
@@ -690,11 +779,12 @@
             transform: translateY(20px);
             transition: all 0.3s ease;
         }
+
         .toast.show {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         /* --- 13. फुलस्क्रीन इमेज व्यूअर (नया) --- */
         .modal-container-fullscreen {
             position: fixed;
@@ -702,7 +792,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 400;
             display: flex;
             align-items: center;
@@ -712,10 +802,12 @@
             transition: opacity 0.3s ease;
             padding: 10px;
         }
+
         .modal-container-fullscreen.visible {
             opacity: 1;
             visibility: visible;
         }
+
         .close-fullscreen-modal {
             position: absolute;
             top: 15px;
@@ -727,6 +819,7 @@
             cursor: pointer;
             z-index: 401;
         }
+
         #fullscreen-image {
             max-width: 100%;
             max-height: 100%;
@@ -745,6 +838,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ===== 1. ऐप कंटेनर ===== -->
@@ -753,7 +847,8 @@
         <!-- ===== 2. हेडर (टॉप ऐप बार) ===== -->
         <header>
             <!-- हेडर लोगो अपडेट किया गया -->
-            <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
+            <img src="logo.png" alt="Logo" class="logo-img"
+                onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
             <span class="logo">JAS Mitra</span>
         </header>
 
@@ -765,7 +860,7 @@
                     <h2>JAS Mitra में आपका स्वागत है</h2>
                     <p>स्वस्थ गाँव, सशक्त समुदाय।</p>
                 </div>
-                
+
                 <!-- इमेज स्लाइडर -->
                 <div class="dashboard-slider-container" id="dashboard-slider">
                     <!-- JS द्वारा स्लाइडर आइटम यहां भरे जाएंगे -->
@@ -791,12 +886,13 @@
                         <!-- JS द्वारा फीड आइटम यहां भरे जाएंगे -->
                     </div>
                 </div>
-                
+
                 <!-- नया: ऐप क्रेडिट कार्ड -->
                 <h3 class="sub-section-title">ऐप क्रेडिट</h3>
                 <div class="card credits-card">
                     <div class="credits-profile">
-                        <img src="nayan.png" alt="Nayan Bhiogade" class="profile-image" onerror="this.src='https://placehold.co/64x64/E0E4E2/404946?text=NB'; this.onerror=null;">
+                        <img src="nayan.png" alt="Nayan Bhiogade" class="profile-image"
+                            onerror="this.src='https://placehold.co/64x64/E0E4E2/404946?text=NB'; this.onerror=null;">
                         <div class="profile-details">
                             <h3>Nayan Bhiogade</h3>
                             <p>Gandhi fellow<br>(Piramal swasthya)</p>
@@ -833,7 +929,7 @@
                 </div>
             </div>
         </main>
-        
+
         <!-- ===== 4. फुटर क्रेडिट ===== -->
         <footer>
             Created by Nayan Bhiogade
@@ -874,7 +970,7 @@
 
         <!-- ===== 7. मोडल (पॉप-अप फॉर्म) ===== -->
         <div id="modal-backdrop"></div>
-        
+
         <!-- मीटिंग मोडल -->
         <div id="modal-meeting" class="modal-container">
             <div class="modal-header">
@@ -902,7 +998,7 @@
                 <button type="submit" class="btn btn-primary">बैठक सेव करें</button>
             </form>
         </div>
-        
+
         <!-- सदस्य मोडल -->
         <div id="modal-member" class="modal-container">
             <div class="modal-header">
@@ -961,7 +1057,7 @@
                 <button type="submit" class="btn btn-primary">निर्णय सेव करें</button>
             </form>
         </div>
-        
+
         <!-- मीटिंग विवरण मोडल -->
         <div id="modal-meeting-details" class="modal-container">
             <div class="modal-header">
@@ -981,7 +1077,7 @@
                 <div class="photo-gallery" id="details-photo-gallery">
                     <!-- JS द्वारा तस्वीरें यहां भरी जाएंगी -->
                 </div>
-                
+
                 <!-- और तस्वीरें जोड़ें -->
                 <form id="add-photo-form" class="add-photo-form">
                     <h3 class="sub-section-title">नई तस्वीर जोड़ें</h3>
@@ -994,7 +1090,7 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- निर्णय विवरण मोडल -->
         <div id="modal-decision-details" class="modal-container">
             <div class="modal-header">
@@ -1014,7 +1110,7 @@
                 <div class="photo-gallery" id="details-decision-photo-gallery">
                     <!-- JS द्वारा तस्वीरें यहां भरी जाएंगी -->
                 </div>
-                
+
                 <!-- और तस्वीरें जोड़ें -->
                 <form id="add-decision-photo-form" class="add-photo-form">
                     <h3 class="sub-section-title">नई तस्वीर जोड़ें</h3>
@@ -1027,10 +1123,10 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- ===== 8. टोस्ट नोटिफिकेशन कंटेनर ===== -->
         <div id="toast-container"></div>
-        
+
         <!-- ===== 9. Lighbox (Fullscreen Image Viewer) ===== -->
         <div id="modal-image-viewer" class="modal-container-fullscreen">
             <button class="close-fullscreen-modal"><span class="material-icons-outlined">close</span></button>
@@ -1050,8 +1146,8 @@
                     members: [],
                     decisions: []
                 },
-                
-                init: function() {
+
+                init: function () {
                     const localData = localStorage.getItem('jasMitraData');
                     if (localData) {
                         this.data = JSON.parse(localData);
@@ -1080,8 +1176,8 @@
                         this.save();
                     }
                 },
-                
-                save: function() {
+
+                save: function () {
                     try {
                         localStorage.setItem('jasMitraData', JSON.stringify(this.data));
                     } catch (e) {
@@ -1093,31 +1189,31 @@
                         }
                     }
                 },
-                
-                addMeeting: function(meeting) {
+
+                addMeeting: function (meeting) {
                     this.data.meetings.unshift(meeting);
                     this.save();
                 },
-                
-                addMember: function(member) {
+
+                addMember: function (member) {
                     this.data.members.unshift(member);
                     this.save();
                 },
 
-                addDecision: function(decision) {
+                addDecision: function (decision) {
                     this.data.decisions.unshift(decision);
                     this.save();
                 },
-                
-                updateDecisionStatus: function(id, newStatus) {
+
+                updateDecisionStatus: function (id, newStatus) {
                     const decision = this.data.decisions.find(d => d.id === id);
                     if (decision) {
                         decision.status = newStatus;
                         this.save();
                     }
                 },
-                
-                addPhotoToMeeting: function(id, photoData) {
+
+                addPhotoToMeeting: function (id, photoData) {
                     const meeting = this.data.meetings.find(m => m.id === id);
                     if (meeting) {
                         if (!meeting.photos) meeting.photos = [];
@@ -1125,8 +1221,8 @@
                         this.save();
                     }
                 },
-                
-                addPhotoToDecision: function(id, photoData) {
+
+                addPhotoToDecision: function (id, photoData) {
                     const decision = this.data.decisions.find(d => d.id === id);
                     if (decision) {
                         if (!decision.photos) decision.photos = [];
@@ -1134,24 +1230,24 @@
                         this.save();
                     }
                 },
-                
-                getMeetingById: function(id) {
+
+                getMeetingById: function (id) {
                     return this.data.meetings.find(m => m.id === id);
                 },
-                
-                getDecisionById: function(id) {
+
+                getDecisionById: function (id) {
                     return this.data.decisions.find(d => d.id === id);
                 },
 
-                getMeetings: function() { return this.data.meetings; },
-                getMembers: function() { return this.data.members; },
-                getDecisions: function() { return this.data.decisions; },
-                
+                getMeetings: function () { return this.data.meetings; },
+                getMembers: function () { return this.data.members; },
+                getDecisions: function () { return this.data.decisions; },
+
                 // डैशबोर्ड के लिए हेल्पर्स
-                getPendingDecisions: function() {
+                getPendingDecisions: function () {
                     return this.data.decisions.filter(d => d.status === 'pending').slice(0, 3); // 3 दिखाएं
                 },
-                getRecentPhotos: function(limit = 3) {
+                getRecentPhotos: function (limit = 3) {
                     return this.data.meetings
                         .flatMap(m => m.photos || []) // सभी फोटो को एक ऐरे में लाएं
                         .slice(0, limit); // केवल कुछ ही लें
@@ -1162,18 +1258,18 @@
             const app = {
                 currentPage: 'home', // वर्तमान पेज को ट्रैक करें
                 currentSliderIndex: 0,
-                
+
                 // DOM एलिमेंट्स को कैश करें
                 elements: {
                     pages: document.querySelectorAll('.page'),
                     navButtons: document.querySelectorAll('.nav-btn'),
                     fab: document.getElementById('fab'),
                     fabIcon: document.querySelector('#fab .material-icons-outlined'),
-                    
+
                     modalBackdrop: document.getElementById('modal-backdrop'),
                     allModals: document.querySelectorAll('.modal-container'),
                     closeModalBtns: document.querySelectorAll('.close-modal'),
-                    
+
                     // फॉर्म
                     meetingForm: document.getElementById('meeting-form'),
                     photoPreview: document.getElementById('photoPreview'),
@@ -1187,7 +1283,7 @@
                     meetingsList: document.getElementById('meetings-list'),
                     membersList: document.getElementById('members-list'),
                     decisionsList: document.getElementById('decisions-list'),
-                    
+
                     // डैशबोर्ड
                     dashboardSlider: document.getElementById('dashboard-slider'),
                     dashboardFeedList: document.getElementById('dashboard-feed-list'),
@@ -1200,22 +1296,22 @@
                     detailsDecisions: document.getElementById('details-decisions'),
                     detailsPhotoGallery: document.getElementById('details-photo-gallery'),
                     detailsMeetingId: document.getElementById('details-meeting-id'),
-                    
+
                     // निर्णय विवरण मोडल
                     detailsDecisionTitle: document.getElementById('details-decision-title'),
                     detailsDecisionResponsible: document.getElementById('details-decision-responsible'),
                     detailsDecisionDetails: document.getElementById('details-decision-details'),
                     detailsDecisionPhotoGallery: document.getElementById('details-decision-photo-gallery'),
                     detailsDecisionId: document.getElementById('details-decision-id'),
-                    
+
                     // Lighbox
                     modalImageViewer: document.getElementById('modal-image-viewer'),
                     fullscreenImage: document.getElementById('fullscreen-image'),
                     closeFullscreenModal: document.querySelector('.close-fullscreen-modal')
                 },
-                
+
                 // ऐप शुरू करें
-                init: function() {
+                init: function () {
                     // फेविकॉन प्लेसहोल्डर सेट करें (यदि असली मौजूद नहीं है)
                     const favicon = document.getElementById('favicon');
                     const testFavicon = new Image();
@@ -1223,15 +1319,15 @@
                         favicon.href = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>➕</text></svg>';
                     };
                     testFavicon.src = 'favicon.ico';
-                
+
                     db.init(); // डेटाबेस शुरू करें
                     this.addEventListeners(); // सभी बटन लिस्नर जोड़ें
                     this.render.all(); // सभी पेज रेंडर करें
                     this.navigate.showPage('home'); // होम पेज दिखाएं
                 },
-                
+
                 // सभी इवेंट लिस्नर सेट करें
-                addEventListeners: function() {
+                addEventListeners: function () {
                     const els = this.elements;
 
                     els.navButtons.forEach(btn => {
@@ -1239,28 +1335,28 @@
                             this.navigate.showPage(btn.dataset.page);
                         });
                     });
-                    
+
                     els.fab.addEventListener('click', () => this.actions.handleFabClick());
-                    
+
                     els.closeModalBtns.forEach(btn => {
                         btn.addEventListener('click', () => this.modal.hide());
                     });
                     els.modalBackdrop.addEventListener('click', () => this.modal.hide());
-                    
+
                     // Lighbox बंद करें
                     els.modalImageViewer.addEventListener('click', () => this.modal.hide('image-viewer'));
-                    
+
                     // फॉर्म सबमिशन
                     els.meetingForm.addEventListener('submit', (e) => this.actions.submitMeeting(e));
                     els.memberForm.addEventListener('submit', (e) => this.actions.submitMember(e));
                     els.decisionForm.addEventListener('submit', (e) => this.actions.submitDecision(e));
                     els.addPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhoto(e));
                     els.addDecisionPhotoForm.addEventListener('submit', (e) => this.actions.submitAnotherPhotoToDecision(e));
-                    
+
                     // फोटो प्रीव्यू
                     els.meetingForm.meetingPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.photoPreview, e.target));
                     els.memberForm.memberPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.memberPhotoPreview, e.target));
-                    
+
                     // डैशबोर्ड क्विक बटन
                     els.quickAddMeeting.addEventListener('click', () => {
                         this.modal.show('meeting');
@@ -1268,7 +1364,7 @@
                     els.quickAddMember.addEventListener('click', () => {
                         this.modal.show('member');
                     });
-                    
+
                     // डायनामिक बटन के लिए इवेंट डेलिगेशन
                     document.body.addEventListener('click', (e) => {
                         // शेयर बटन
@@ -1296,7 +1392,7 @@
                             this.actions.showFullscreenImage(e.target.src);
                         }
                     });
-                    
+
                     // निर्णय स्टेटस बदलने के लिए इवेंट डेलिगेशन
                     els.decisionsList.addEventListener('change', (e) => {
                         if (e.target.classList.contains('status-select')) {
@@ -1309,16 +1405,16 @@
 
                 // --- 3. रेंडरिंग फ़ंक्शंस ---
                 render: {
-                    all: function() {
+                    all: function () {
                         this.dashboard();
                         this.meetings();
                         this.members();
                         this.decisions();
                         this.dashboardSlider();
                     },
-                    
+
                     // डैशबोर्ड आँकड़े और फीड
-                    dashboard: function() {
+                    dashboard: function () {
                         const feedList = app.elements.dashboardFeedList;
                         const pending = db.getPendingDecisions();
                         feedList.innerHTML = ''; // फीड को साफ़ करें
@@ -1338,14 +1434,14 @@
                             });
                         }
                     },
-                    
+
                     // डैशबोर्ड स्लाइडर
-                    dashboardSlider: function() {
+                    dashboardSlider: function () {
                         const slider = app.elements.dashboardSlider;
                         let photos = db.getRecentPhotos(3); // 3 तस्वीरें लें
-                        
+
                         // यदि कोई तस्वीर नहीं है, तो आपकी दी गई तस्वीर को प्लेसहोल्डर के रूप में उपयोग करें
-                        if(photos.length === 0) {
+                        if (photos.length === 0) {
                             photos = [
                                 'https://i.postimg.cc/tJLxR4GT/Whats-App-Image-2025-11-01-at-18-45-22-460e6b88.jpg'
                             ];
@@ -1359,7 +1455,7 @@
                                 </div>
                             `;
                         });
-                        
+
                         // स्लाइडर लॉजिक
                         const items = slider.querySelectorAll('.slider-item');
                         if (items.length > 1) {
@@ -1372,9 +1468,9 @@
                             }, 4000); // हर 4 सेकंड में बदलें
                         }
                     },
-                    
+
                     // मीटिंग कार्ड रेंडर करें
-                    meetings: function() {
+                    meetings: function () {
                         const meetings = db.getMeetings();
                         const listEl = app.elements.meetingsList;
                         listEl.innerHTML = '';
@@ -1394,9 +1490,9 @@
                             `;
                         });
                     },
-                    
+
                     // सदस्य कार्ड रेंडर करें
-                    members: function() {
+                    members: function () {
                         const members = db.getMembers();
                         const listEl = app.elements.membersList;
                         listEl.innerHTML = '';
@@ -1405,10 +1501,10 @@
                             return;
                         }
                         members.forEach(p => {
-                            const photo = p.photo ? 
-                                `<img src="${p.photo}" alt="${p.name}" class="profile-pic">` : 
+                            const photo = p.photo ?
+                                `<img src="${p.photo}" alt="${p.name}" class="profile-pic">` :
                                 `<div class="profile-pic"><span class="material-icons-outlined">person</span></div>`;
-                                
+
                             listEl.innerHTML += `
                                 <div class="card member-card">
                                     ${photo}
@@ -1424,9 +1520,9 @@
                             `;
                         });
                     },
-                    
+
                     // निर्णय कार्ड रेंडर करें
-                    decisions: function() {
+                    decisions: function () {
                         const decisions = db.getDecisions();
                         const listEl = app.elements.decisionsList;
                         listEl.innerHTML = '';
@@ -1440,7 +1536,7 @@
                                 <option value="in-progress" ${d.status === 'in-progress' ? 'selected' : ''}>जारी है</option>
                                 <option value="completed" ${d.status === 'completed' ? 'selected' : ''}>पूर्ण</option>
                             `;
-                            
+
                             listEl.innerHTML += `
                                 <div class="card decision-card">
                                     <button class="btn-icon-round btn-edit-decision" data-id="${d.id}">
@@ -1456,15 +1552,15 @@
                             `;
                         });
                     },
-                    
+
                     // मीटिंग विवरण मोडल रेंडर करें
-                    meetingDetails: function(meeting) {
+                    meetingDetails: function (meeting) {
                         const els = app.elements;
                         els.detailsTitle.textContent = meeting.agenda;
                         els.detailsDate.textContent = meeting.date;
                         els.detailsDecisions.textContent = meeting.decisions || 'N/A';
                         els.detailsMeetingId.value = meeting.id; // फॉर्म में ID सेव करें
-                        
+
                         // फोटो गैलरी भरें
                         const gallery = els.detailsPhotoGallery;
                         gallery.innerHTML = '';
@@ -1476,15 +1572,15 @@
                             gallery.innerHTML = '<p>कोई तस्वीर नहीं है।</p>';
                         }
                     },
-                    
+
                     // निर्णय विवरण मोडल रेंडर करें
-                    decisionDetails: function(decision) {
+                    decisionDetails: function (decision) {
                         const els = app.elements;
                         els.detailsDecisionTitle.textContent = decision.title;
                         els.detailsDecisionResponsible.textContent = decision.responsible;
                         els.detailsDecisionDetails.textContent = decision.details || 'N/A';
                         els.detailsDecisionId.value = decision.id; // फॉर्म में ID सेव करें
-                        
+
                         // फोटो गैलरी भरें
                         const gallery = els.detailsDecisionPhotoGallery;
                         gallery.innerHTML = '';
@@ -1497,20 +1593,20 @@
                         }
                     }
                 },
-                
+
                 // --- 4. नेविगेशन (JS अपडेट किया गया) ---
                 navigate: {
-                    showPage: function(pageId) {
+                    showPage: function (pageId) {
                         app.currentPage = pageId;
                         app.elements.pages.forEach(page => page.classList.remove('active'));
                         document.getElementById(`page-${pageId}`).classList.add('active');
-                        
+
                         app.elements.navButtons.forEach(btn => {
                             // आइकन को ढूंढें (इसमें 'material-icons' या 'material-icons-outlined' क्लास हो सकती है)
-                            const icon = btn.querySelector('.nav-indicator span'); 
+                            const icon = btn.querySelector('.nav-indicator span');
                             const isActive = btn.dataset.page === pageId;
                             btn.classList.toggle('active', isActive);
-                            
+
                             // आइकन स्टाइल को क्लास बदलकर स्विच करें
                             if (isActive) {
                                 icon.classList.remove('material-icons-outlined');
@@ -1520,10 +1616,10 @@
                                 icon.classList.add('material-icons-outlined');
                             }
                         });
-                        
+
                         const fab = app.elements.fab;
                         const fabIcon = app.elements.fabIcon;
-                        
+
                         switch (pageId) {
                             case 'home':
                                 fab.classList.add('hidden');
@@ -1544,50 +1640,50 @@
                         window.scrollTo(0, 0);
                     }
                 },
-                
+
                 // --- 5. मोडल हैंडलिंग ---
                 modal: {
-                    show: function(modalId) {
+                    show: function (modalId) {
                         const modal = document.getElementById(`modal-${modalId}`);
                         if (modal) {
                             app.elements.modalBackdrop.classList.add('visible');
                             modal.classList.add('visible');
                         }
                     },
-                    hide: function(modalId = null) {
+                    hide: function (modalId = null) {
                         if (modalId === 'image-viewer') {
                             app.elements.modalImageViewer.classList.remove('visible');
                             return;
                         }
-                        
+
                         app.elements.modalBackdrop.classList.remove('visible');
                         app.elements.allModals.forEach(modal => {
                             modal.classList.remove('visible');
                         });
-                        
+
                         // सभी फॉर्म रीसेट करें
                         app.elements.meetingForm.reset();
                         app.elements.memberForm.reset();
                         app.elements.decisionForm.reset();
                         app.elements.addPhotoForm.reset();
                         app.elements.addDecisionPhotoForm.reset();
-                        
+
                         // सभी प्रीव्यू साफ़ करें
                         app.elements.photoPreview.style.display = 'none';
                         app.elements.photoPreview.src = '';
                         app.elements.memberPhotoPreview.style.display = 'none';
                         app.elements.memberPhotoPreview.src = '';
-                        
+
                         // कंप्रेस्ड डेटा साफ़ करें
                         app.elements.meetingForm.meetingPhoto.dataset.compressedData = '';
                         app.elements.memberForm.memberPhoto.dataset.compressedData = '';
                     }
                 },
-                
+
                 // --- 6. ऐप एक्शन्स ---
                 actions: {
                     // FAB क्लिक हैंडलर
-                    handleFabClick: function() {
+                    handleFabClick: function () {
                         switch (app.currentPage) {
                             case 'meetings':
                                 app.modal.show('meeting');
@@ -1600,13 +1696,13 @@
                                 break;
                         }
                     },
-                    
+
                     // मीटिंग सबमिट
-                    submitMeeting: function(e) {
+                    submitMeeting: function (e) {
                         e.preventDefault();
                         const form = app.elements.meetingForm;
                         const photoData = form.meetingPhoto.dataset.compressedData || 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
-                        
+
                         const newMeeting = {
                             id: 'm' + Date.now(),
                             date: form.meetingDate.value,
@@ -1622,13 +1718,13 @@
                         app.toast.show('बैठक सफलतापूर्वक सेव की गई!');
                         app.navigate.showPage('meetings');
                     },
-                    
+
                     // सदस्य सबमिट
-                    submitMember: function(e) {
+                    submitMember: function (e) {
                         e.preventDefault();
                         const form = app.elements.memberForm;
                         const photoData = form.memberPhoto.dataset.compressedData || null;
-                        
+
                         const newMember = {
                             id: 'p' + Date.now(),
                             name: form.memberName.value,
@@ -1645,7 +1741,7 @@
                     },
 
                     // निर्णय सबमिट
-                    submitDecision: function(e) {
+                    submitDecision: function (e) {
                         e.preventDefault();
                         const form = app.elements.decisionForm;
                         const newDecision = {
@@ -1663,14 +1759,14 @@
                         app.toast.show('निर्णय सफलतापूर्वक जोड़ा गया!');
                         app.navigate.showPage('decisions');
                     },
-                    
+
                     // मीटिंग विवरण में नई तस्वीर सबमिट करें
-                    submitAnotherPhoto: function(e) {
+                    submitAnotherPhoto: function (e) {
                         e.preventDefault();
                         const form = app.elements.addPhotoForm;
                         const meetingId = form.elements['details-meeting-id'].value;
                         const photoFile = form.elements['newMeetingPhoto'].files[0];
-                        
+
                         if (photoFile) {
                             app.toast.show('Compressing photo...');
                             this.compressImage(photoFile, (photoData) => {
@@ -1686,14 +1782,14 @@
                             app.toast.show('कृपया एक तस्वीर चुनें।');
                         }
                     },
-                    
+
                     // निर्णय विवरण में नई तस्वीर सबमिट करें
-                    submitAnotherPhotoToDecision: function(e) {
+                    submitAnotherPhotoToDecision: function (e) {
                         e.preventDefault();
                         const form = app.elements.addDecisionPhotoForm;
                         const decisionId = form.elements['details-decision-id'].value;
                         const photoFile = form.elements['newDecisionPhoto'].files[0];
-                        
+
                         if (photoFile) {
                             app.toast.show('Compressing photo...');
                             this.compressImage(photoFile, (photoData) => {
@@ -1710,26 +1806,26 @@
                     },
 
                     // स्टेटस अपडेट
-                    updateDecisionStatus: function(id, newStatus, selectElement) {
+                    updateDecisionStatus: function (id, newStatus, selectElement) {
                         db.updateDecisionStatus(id, newStatus);
                         selectElement.className = 'status-select status-' + newStatus;
                         app.render.dashboard(); // लंबित गिनती अपडेट करें
                         app.toast.show('स्टेटस अपडेट किया गया!');
                     },
-                    
+
                     // फोटो प्रीव्यू (जेनेरिक) और कंप्रेस
-                    previewPhoto: function(event, previewElement, inputElement) {
+                    previewPhoto: function (event, previewElement, inputElement) {
                         const file = event.target.files[0];
                         if (!file) {
                             inputElement.dataset.compressedData = '';
                             previewElement.style.display = 'none';
                             return;
                         }
-                        
+
                         // 1. तुरंत प्रीव्यू दिखाएं
                         previewElement.src = URL.createObjectURL(file);
                         previewElement.style.display = 'block';
-                        
+
                         // 2. कंप्रेस करें और डेटा को बैकग्राउंड में सेव करें
                         app.toast.show('Compressing photo...');
                         this.compressImage(file, (compressedData) => {
@@ -1739,9 +1835,9 @@
                             app.toast.show(error, true);
                         });
                     },
-                    
+
                     // नया: इमेज कंप्रेशन फ़ंक्शन
-                    compressImage: function(file, callback, errorCallback) {
+                    compressImage: function (file, callback, errorCallback) {
                         const MAX_WIDTH = 1024;
                         const MAX_HEIGHT = 1024;
                         const MIME_TYPE = "image/jpeg";
@@ -1765,72 +1861,72 @@
                                         height = MAX_HEIGHT;
                                     }
                                 }
-                                
+
                                 const canvas = document.createElement('canvas');
                                 canvas.width = width;
                                 canvas.height = height;
                                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0, width, height);
-                                
+
                                 const compressedData = canvas.toDataURL(MIME_TYPE, QUALITY);
-                                
+
                                 // localStorage की सीमा जांचें
                                 if (compressedData.length > 500000) { // ~0.5MB
-                                    if(errorCallback) errorCallback('Error: Image too large to save.');
+                                    if (errorCallback) errorCallback('Error: Image too large to save.');
                                     return;
                                 }
-                                
+
                                 callback(compressedData);
                             };
                             img.onerror = () => {
-                                if(errorCallback) errorCallback('Error: Invalid image file.');
+                                if (errorCallback) errorCallback('Error: Invalid image file.');
                             };
                             img.src = e.target.result;
                         };
                         reader.onerror = () => {
-                             if(errorCallback) errorCallback('Error: Could not read image file.');
+                            if (errorCallback) errorCallback('Error: Could not read image file.');
                         };
                         reader.readAsDataURL(file);
                     },
-                    
+
                     // मीटिंग विवरण दिखाएं
-                    showMeetingDetails: function(id) {
+                    showMeetingDetails: function (id) {
                         const meeting = db.getMeetingById(id);
                         if (meeting) {
                             app.render.meetingDetails(meeting);
                             app.modal.show('meeting-details');
                         }
                     },
-                    
+
                     // निर्णय विवरण दिखाएं
-                    showDecisionDetails: function(id) {
+                    showDecisionDetails: function (id) {
                         const decision = db.getDecisionById(id);
                         if (decision) {
                             app.render.decisionDetails(decision);
                             app.modal.show('decision-details');
                         }
                     },
-                    
+
                     // फुलस्क्रीन इमेज दिखाएं
-                    showFullscreenImage: function(src) {
+                    showFullscreenImage: function (src) {
                         app.elements.fullscreenImage.src = src;
                         app.modal.show('image-viewer');
                     },
-                    
-                    share: function(agenda) {
+
+                    share: function (agenda) {
                         const text = `*JAS मित्र सूचना*\n\n*विषय:* ${agenda}\n\nJAS मित्र ऐप से।`;
                         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                         window.open(url, '_blank');
                     },
-                    
-                    download: function() {
+
+                    download: function () {
                         app.toast.show('प्रोटोटाइप: रिपोर्ट डाउनलोड हो रही है...');
                     }
                 },
-                
+
                 // --- 7. टोस्ट नोटिफिकेशन ---
                 toast: {
-                    show: function(message, isError = false) {
+                    show: function (message, isError = false) {
                         const toast = document.createElement('div');
                         toast.className = 'toast';
                         toast.textContent = message;
@@ -1838,9 +1934,9 @@
                             toast.style.backgroundColor = '#D32F2F'; // त्रुटि के लिए लाल
                         }
                         document.getElementById('toast-container').appendChild(toast);
-                        
+
                         setTimeout(() => toast.classList.add('show'), 10);
-                        
+
                         setTimeout(() => {
                             toast.classList.remove('show');
                             setTimeout(() => toast.remove(), 300);
@@ -1854,5 +1950,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>
