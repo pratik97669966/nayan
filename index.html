@@ -853,11 +853,11 @@
 
         <!-- ===== 2. हेडर (टॉप ऐप बार) ===== -->
         <header>
-            <!-- हेडर लोगो आपके GitHub URL से अपडेट किया गया -->
-            <img src="/logo.png" alt="Logo" class="logo-img"
+            <img src="logo.png" alt="Logo" class="logo-img"
                 onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
             <span class="logo">JAS Mitra</span>
         </header>
+
 
         <!-- ===== 3. मुख्य कंटेंट ===== -->
         <main>
@@ -2012,7 +2012,7 @@
                     // FIX: PDF जनरेट करें (html2canvas के साथ अपडेट किया गया)
                     generatePdf: async function (id, type) {
                         app.toast.show('Generating PDF...');
-                        
+
                         // A4 size in points (pt)
                         const doc = new jsPDF({
                             unit: 'pt',
