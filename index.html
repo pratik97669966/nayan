@@ -4,24 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAS Mitra</title>
+    <title>JAS Mitra (Firebase)</title>
 
-    <!-- Favicon (Favicon) - आपके अनुरोध के अनुसार अपडेट किया गया -->
+    <!-- Favicon -->
     <link id="favicon" rel="icon" href="favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts - Noto Sans (Hindi + Latin) -->
     <link rel="preconnect" href="https.googleapis.com">
-    <link rel="preconnect" href="https.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Material Icons - Filled और Outlined दोनों को इम्पोर्ट करें -->
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
 
-    <!-- jsPDF Libraries for PDF Generation -->
+    <!-- jsPDF & html2canvas for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <!-- FIX: हिंदी टेक्स्ट को PDF में रेंडर करने के लिए html2canvas जोड़ा गया -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- ===== 1. FIREBASE SDKs (Storage REMOVED) ===== -->
+    <script type="module">
+        // Firebase SDKs से आवश्यक फ़ंक्शन आयात करें
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, push, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        // Firebase Storage SDKs हटा दिए गए
+
+        // -----------------------------------------------------------------
+        // TODO: इसे अपने Firebase प्रोजेक्ट के कॉन्फ़िगरेशन से बदलें
+        // -----------------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgytGr6HPXqMzPepx1JPOvvg1zMc3QrZ8",
+            authDomain: "jas-mitra.firebaseapp.com",
+            projectId: "jas-mitra",
+            databaseURL: "https://jas--mitra-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            storageBucket: "jas-mitra.firebasestorage.app",
+            messagingSenderId: "618945780065",
+            appId: "1:618945780065:web:0f98b3e5953ef0ae394d20",
+            measurementId: "G-PQQ79SFBP5"
+        };
+        // -----------------------------------------------------------------
+
+        // Firebase को प्रारंभ करें
+        try {
+            const appFirebase = initializeApp(firebaseConfig);
+            const auth = getAuth(appFirebase);
+            const db = getDatabase(appFirebase);
+            // const storage = getStorage(appFirebase); // Storage हटा दिया गया
+
+            // मुख्य ऐप स्क्रिप्ट के लिए Firebase सेवाओं को विंडो पर उपलब्ध कराएँ
+            window.firebaseServices = {
+                auth,
+                db,
+                // storage, // Storage हटा दिया गया
+                ref,
+                set,
+                onValue,
+                push,
+                update,
+                // storageRef, // Storage हटा दिया गया
+                // uploadString, // Storage हटा दिया गया
+                // getDownloadURL, // Storage हटा दिया गया
+                signInAnonymously,
+                onAuthStateChanged,
+                serverTimestamp
+            };
+
+            // ऐप के प्रारंभ होने की सूचना दें
+            document.dispatchEvent(new Event('firebaseReady'));
+
+        } catch (e) {
+            console.error("Firebase प्रारंभ करने में त्रुटि:", e);
+            alert("Firebase कॉन्फ़िगरेशन में त्रुटि है। कृपया अपनी `firebaseConfig` जाँचें।");
+        }
+    </script>
+
 
     <style>
         /* --- 1. मटेरियल 3 कलर पैलेट और बेस --- */
@@ -79,7 +135,6 @@
             color: var(--on-background);
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
-            /* मोबाइल पर क्लिक फ्लैश हटाता है */
         }
 
         /* --- 2. मुख्य ऐप लेआउट --- */
@@ -91,6 +146,47 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* लोडिंग ओवरले */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-container);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* --- 3. हेडर (टॉप ऐप बार) --- */
@@ -106,7 +202,6 @@
             align-items: center;
         }
 
-        /* नया: ऐप लोगो */
         header .logo-img {
             height: 42px;
             width: 42px;
@@ -127,7 +222,6 @@
             flex-grow: 1;
             padding: 20px;
             padding-bottom: 100px;
-            /* बॉटम नेविगेशन के लिए जगह */
         }
 
         .page {
@@ -168,7 +262,7 @@
             padding-bottom: 5px;
         }
 
-        /* --- 5. बॉटम नेविगेशन बार (UI अपडेट किया गया) --- */
+        /* --- 5. बॉटम नेविगेशन बार --- */
         #bottom-nav {
             position: fixed;
             bottom: 0;
@@ -181,11 +275,9 @@
             display: flex;
             justify-content: space-around;
             padding: 0 8px;
-            /* किनारों पर थोड़ा पैडिंग */
             z-index: 100;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
             height: 80px;
-            /* मटेरियल 3 ऊंचाई */
         }
 
         .nav-btn {
@@ -196,14 +288,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* वर्टिकली सेंटर */
             color: var(--on-surface-variant);
-            /* निष्क्रिय रंग */
             flex: 1;
-            /* बराबर जगह बांटें */
             height: 100%;
             gap: 4px;
-            /* आइकन और लेबल के बीच गैप */
             transition: color 0.2s ease-in-out;
         }
 
@@ -216,7 +304,6 @@
             justify-content: center;
             transition: background-color 0.2s ease-in-out;
             background-color: transparent;
-            /* डिफ़ॉल्ट रूप से पारदर्शी */
         }
 
         .nav-btn .material-icons,
@@ -227,25 +314,20 @@
 
         .nav-label {
             font-size: 0.75rem;
-            /* 12px */
             font-weight: 500;
             transition: color 0.2s ease-in-out;
         }
 
-        /* सक्रिय (Active) स्थिति */
         .nav-btn.active {
             color: var(--on-surface);
-            /* सक्रिय लेबल टेक्स्ट */
         }
 
         .nav-btn.active .nav-indicator {
             background-color: var(--primary-container);
-            /* पिल का रंग */
         }
 
         .nav-btn.active .material-icons {
             color: var(--on-primary-container);
-            /* सक्रिय आइकन का रंग */
         }
 
         /* --- 6. फ्लोटिंग एक्शन बटन (FAB) --- */
@@ -282,7 +364,7 @@
             transition: transform 0.2s ease-in-out;
         }
 
-        /* --- 7. सामान्य कंपोनेंट्स (कार्ड्स, बटन) --- */
+        /* --- 7. सामान्य कंपोनेंट्स --- */
         .card {
             background-color: var(--surface);
             border-radius: var(--radius-lg);
@@ -291,7 +373,6 @@
             margin-bottom: 20px;
             border: 1px solid var(--surface-variant);
             position: relative;
-            /* एडिट बटन के लिए */
         }
 
         .btn {
@@ -318,20 +399,6 @@
             color: var(--on-secondary-container);
         }
 
-        .btn-small-icon {
-            background: none;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
-        }
-
         .btn-icon-round {
             background: none;
             border: none;
@@ -345,7 +412,7 @@
             background-color: var(--surface-variant);
         }
 
-        /* --- 8. नया डैशबोर्ड UI --- */
+        /* --- 8. डैशबोर्ड UI --- */
         #page-home .welcome-card {
             background: var(--primary);
             color: var(--on-primary);
@@ -442,7 +509,6 @@
             color: var(--on-surface-variant);
         }
 
-        /* नया: क्रेडिट कार्ड स्टाइल */
         .credits-card .credits-profile {
             display: flex;
             align-items: center;
@@ -494,7 +560,6 @@
         /* --- 9. मीटिंग और सदस्य कार्ड --- */
         .meeting-card {
             cursor: pointer;
-            /* क्लिक करने योग्य दिखाने के लिए */
         }
 
         .meeting-card img {
@@ -562,13 +627,11 @@
             text-decoration: none;
         }
 
-        /* निर्णय कार्ड और स्टेटस */
         .decision-card {
             display: flex;
             flex-direction: column;
             gap: 5px;
             padding-right: 40px;
-            /* एडिट बटन के लिए जगह */
         }
 
         .decision-card h3 {
@@ -594,7 +657,6 @@
             margin-top: 5px;
             cursor: pointer;
             width: 120px;
-            /* एक निश्चित चौड़ाई दें */
         }
 
         .status-select.status-pending {
@@ -616,7 +678,7 @@
         }
 
 
-        /* --- 10. मोडल (फॉर्म के लिए) --- */
+        /* --- 10. मोडल --- */
         #modal-backdrop {
             position: fixed;
             top: 0;
@@ -734,6 +796,10 @@
         .detail-item p {
             font-size: 1rem;
             color: var(--on-surface);
+            white-space: pre-wrap;
+            /* टेक्स्ट को रैप करने के लिए */
+            word-wrap: break-word;
+            /* लंबे शब्दों को तोड़ने के लिए */
         }
 
         .photo-gallery {
@@ -792,7 +858,13 @@
             transform: translateY(0);
         }
 
-        /* --- 13. फुलस्क्रीन इमेज व्यूअर (नया) --- */
+        /* त्रुटि टोस्ट */
+        .toast.error {
+            background-color: #D32F2F;
+            /* लाल */
+        }
+
+        /* --- 13. फुलस्क्रीन इमेज व्यूअर --- */
         .modal-container-fullscreen {
             position: fixed;
             top: 0;
@@ -848,18 +920,23 @@
 
 <body>
 
-    <!-- ===== 1. ऐप कंटेनर ===== -->
+    <!-- ===== ऐप कंटेनर ===== -->
     <div id="app-container">
 
-        <!-- ===== 2. हेडर (टॉप ऐप बार) ===== -->
+        <!-- ===== लोडिंग ओवरले (नया) ===== -->
+        <div id="loading-overlay">
+            <div class="spinner"></div>
+            <p>JAS Mitra लोड हो रहा है...</p>
+        </div>
+
+        <!-- ===== हेडर ===== -->
         <header>
-            <img src="logo.png" alt="Logo" class="logo-img"
+            <img src="https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS" alt="Logo" class="logo-img"
                 onerror="this.src='https://placehold.co/40x40/2A9D8F/FFFFFF?text=JAS'; this.onerror=null;">
             <span class="logo">JAS Mitra</span>
         </header>
 
-
-        <!-- ===== 3. मुख्य कंटेंट ===== -->
+        <!-- ===== मुख्य कंटेंट ===== -->
         <main>
             <!-- 🏠 पृष्ठ: होम/डैशबोर्ड -->
             <div id="page-home" class="page active">
@@ -894,11 +971,12 @@
                     </div>
                 </div>
 
-                <!-- नया: ऐप क्रेडिट कार्ड -->
+                <!-- ऐप क्रेडिट कार्ड -->
                 <h3 class="sub-section-title">ऐप क्रेडिट</h3>
                 <div class="card credits-card">
                     <div class="credits-profile">
-                        <img src="nayan.png" alt="Nayan Bhiogade" class="profile-image"
+                        <img src="https://placehold.co/64x64/E0E4E2/404946?text=NB" alt="Nayan Bhiogade"
+                            class="profile-image"
                             onerror="this.src='https://placehold.co/64x64/E0E4E2/404946?text=NB'; this.onerror=null;">
                         <div class="profile-details">
                             <h3>Nayan Bhiogade</h3>
@@ -916,7 +994,7 @@
             <div id="page-meetings" class="page">
                 <h2 class="section-title">बैठक सूची</h2>
                 <div id="meetings-list">
-                    <!-- JS द्वारा बैठकें यहां भरी जाएंगी -->
+                    <!-- JS (Firebase) द्वारा बैठकें यहां भरी जाएंगी -->
                 </div>
             </div>
 
@@ -924,7 +1002,7 @@
             <div id="page-members" class="page">
                 <h2 class="section-title">सदस्य सूची</h2>
                 <div id="members-list">
-                    <!-- JS द्वारा सदस्य यहां भरे जाएंगे -->
+                    <!-- JS (Firebase) द्वारा सदस्य यहां भरे जाएंगे -->
                 </div>
             </div>
 
@@ -932,50 +1010,50 @@
             <div id="page-decisions" class="page">
                 <h2 class="section-title">प्रस्ताव और निर्णय</h2>
                 <div id="decisions-list">
-                    <!-- JS द्वारा निर्णय यहां भरे जाएंगे -->
+                    <!-- JS (Firebase) द्वारा निर्णय यहां भरे जाएंगे -->
                 </div>
             </div>
         </main>
 
-        <!-- ===== 4. फुटर क्रेडिट ===== -->
+        <!-- ===== फुटर क्रेडिट ===== -->
         <footer>
             Created by Nayan Bhiogade
         </footer>
 
-        <!-- ===== 5. बॉटम नेविगेशन (HTML अपडेट किया गया) ===== -->
+        <!-- ===== बॉटम नेविगेशन ===== -->
         <nav id="bottom-nav">
             <button class="nav-btn active" data-page="home">
                 <div class="nav-indicator">
-                    <span class="material-icons">home</span> <!-- सक्रिय: filled -->
+                    <span class="material-icons">home</span>
                 </div>
                 <span class="nav-label">होम</span>
             </button>
             <button class="nav-btn" data-page="meetings">
                 <div class="nav-indicator">
-                    <span class="material-icons-outlined">event</span> <!-- निष्क्रिय: outlined -->
+                    <span class="material-icons-outlined">event</span>
                 </div>
                 <span class="nav-label">बैठकें</span>
             </button>
             <button class="nav-btn" data-page="members">
                 <div class="nav-indicator">
-                    <span class="material-icons-outlined">groups</span> <!-- निष्क्रिय: outlined -->
+                    <span class="material-icons-outlined">groups</span>
                 </div>
                 <span class="nav-label">सदस्य</span>
             </button>
             <button class="nav-btn" data-page="decisions">
                 <div class="nav-indicator">
-                    <span class="material-icons-outlined">checklist</span> <!-- निष्क्रिय: outlined -->
+                    <span class="material-icons-outlined">checklist</span>
                 </div>
                 <span class="nav-label">निर्णय</span>
             </button>
         </nav>
 
-        <!-- ===== 6. फ्लोटिंग एक्शन बटन (FAB) ===== -->
+        <!-- ===== फ्लोटिंग एक्शन बटन (FAB) ===== -->
         <button id="fab" class="hidden">
             <span class="material-icons-outlined">add</span>
         </button>
 
-        <!-- ===== 7. मोडल (पॉप-अप फॉर्म) ===== -->
+        <!-- ===== मोडल (पॉप-अप फॉर्म) ===== -->
         <div id="modal-backdrop"></div>
 
         <!-- मीटिंग मोडल -->
@@ -1145,7 +1223,7 @@
             </div>
         </div>
 
-        <!-- नया: शेयर मेनू मोडल -->
+        <!-- शेयर मेनू मोडल -->
         <div id="modal-share-menu" class="modal-container">
             <div class="modal-header">
                 <h2>Share / Export</h2>
@@ -1162,10 +1240,10 @@
             </div>
         </div>
 
-        <!-- ===== 8. टोस्ट नोटिफिकेशन कंटेनर ===== -->
+        <!-- टोस्ट नोटिफिकेशन कंटेनर -->
         <div id="toast-container"></div>
 
-        <!-- ===== 9. Lighbox (Fullscreen Image Viewer) ===== -->
+        <!-- Lighbox (Fullscreen Image Viewer) -->
         <div id="modal-image-viewer" class="modal-container-fullscreen">
             <button class="close-fullscreen-modal"><span class="material-icons-outlined">close</span></button>
             <img id="fullscreen-image" src="" alt="Fullscreen Image">
@@ -1173,153 +1251,201 @@
 
     </div> <!-- End of app-container -->
 
-    <!-- ===== (नया) PDF रेंडरिंग के लिए हिडन कंटेनर ===== -->
+    <!-- PDF रेंडरिंग के लिए हिडन कंटेनर -->
     <div id="pdf-render-container"
-        style="position: absolute; left: -9999px; top: 0; background: white; padding: 20px; width: 595px; /* A4 width in points */ font-family: 'Noto Sans', sans-serif; color: #000; line-height: 1.5;">
+        style="position: absolute; left: -9999px; top: 0; background: white; padding: 20px; width: 595px; font-family: 'Noto Sans', sans-serif; color: #000; line-height: 1.5;">
     </div>
 
 
-    <!-- ===== 10. जावास्क्रिप्ट (ऐप लॉजिक) ===== -->
+    <!-- ===== 10. जावास्क्रिप्ट (ऐप लॉजिक) - FIREBASE के साथ अपडेट किया गया ===== -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // यह स्क्रिप्ट 'firebaseReady' इवेंट की प्रतीक्षा करेगी
+        document.addEventListener('firebaseReady', () => {
+
+            // --- 0. Firebase से सेवाएं प्राप्त करें ---
+            const {
+                auth, db, ref, set, onValue, push, update,
+                signInAnonymously, onAuthStateChanged, serverTimestamp
+            } = window.firebaseServices; // Storage हटा दिया गया
 
             // jsPDF को विंडो ऑब्जेक्ट से इम्पोर्ट करें
             const { jsPDF } = window.jspdf;
 
-            // --- 1. "फेक API" (localStorage) ---
-            const db = {
-                data: {
-                    meetings: [],
-                    members: [],
-                    decisions: []
-                },
+            // --- 1. रीयलटाइम डेटाबेस (Firebase RTDB) ---
+            const dbFirebase = {
 
-                init: function () {
-                    const localData = localStorage.getItem('jasMitraData');
-                    if (localData) {
-                        this.data = JSON.parse(localData);
-                    } else {
-                        // पहली बार के लिए डिफ़ॉल्ट डेटा
-                        this.data = {
-                            meetings: [
-                                {
-                                    id: 'm1',
-                                    date: '2025-10-25',
-                                    agenda: 'मासिक स्वास्थ्य शिविर की योजना',
-                                    decisions: 'डॉक्टरों की टीम और दवाओं की व्यवस्था की जाएगी।',
-                                    photos: ['https://picsum.photos/600/400?random=1'] // फोटो को ऐरे में बदलें
-                                }
-                            ],
-                            members: [
-                                { id: 'p1', name: 'श्री. रमेश पाटिल', role: 'अध्यक्ष (सरपंच)', phone: '9876543210', photo: null },
-                                { id: 'p2', name: 'श्रीमती. सीता देवी', role: 'सचिव (ANM)', phone: '9123456789', photo: null }
-                            ],
-                            decisions: [
-                                { id: 'd1', title: 'पानी की टंकी की सफाई', status: 'completed', responsible: 'रमेश पाटिल', details: 'सफाई का काम पूरा हो गया है।', photos: [] },
-                                { id: 'd2', title: 'मच्छर फॉगिंग मशीन', status: 'in-progress', responsible: 'सीता देवी', details: 'मशीन का ऑर्डर दे दिया गया है।', photos: [] },
-                                { id: 'd3', title: 'पोषण वाटिका निर्माण', status: 'pending', responsible: 'आशा कार्यकर्ता', details: 'जगह का चयन करना बाकी है।', photos: [] }
-                            ]
-                        };
-                        this.save();
-                    }
-                },
-
-                save: function () {
-                    try {
-                        localStorage.setItem('jasMitraData', JSON.stringify(this.data));
-                    } catch (e) {
-                        if (e.name === 'QuotaExceededError') {
-                            console.error('Storage quota exceeded! Cannot save data.');
-                            app.toast.show('Error: Storage full. Cannot save.', true);
+                // Firebase Auth को प्रारंभ करें और श्रोताओं (listeners) को अटैच करें
+                initAuth: () => {
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            // उपयोगकर्ता साइन इन है (गुमनाम रूप से)
+                            app.data.userId = user.uid;
+                            console.log("Firebase Auth: User signed in anonymously.", user.uid);
+                            // अब जब हमारे पास userId है, हम डेटा श्रोताओं को अटैच कर सकते हैं
+                            dbFirebase.attachListeners();
                         } else {
-                            console.error('Failed to save data:', e);
+                            // उपयोगकर्ता साइन आउट है, साइन इन करने का प्रयास करें
+                            console.log("Firebase Auth: No user found, signing in anonymously...");
+                            signInAnonymously(auth).catch((error) => {
+                                console.error("Anonymous sign-in failed:", error);
+                                app.toast.show('Error: Could not connect to database.', true);
+                            });
                         }
-                    }
+                    });
                 },
 
-                addMeeting: function (meeting) {
-                    this.data.meetings.unshift(meeting);
-                    this.save();
+                // डेटाबेस में परिवर्तनों को सुनने के लिए रीयलटाइम श्रोताओं (listeners) को अटैच करें
+                attachListeners: () => {
+                    const userId = app.data.userId;
+                    if (!userId) return;
+
+                    const loadingOverlay = document.getElementById('loading-overlay');
+
+                    // मीटिंग्स श्रोता
+                    const meetingsRef = ref(db, `jasMitraData/${userId}/meetings`);
+                    onValue(meetingsRef, (snapshot) => {
+                        const data = snapshot.val();
+                        // Firebase RTDB ऑब्जेक्ट को ऐरे में बदलें
+                        const meetingsArray = data ? Object.keys(data).map(key => ({ ...data[key], id: key })).sort((a, b) => b.createdAt - a.createdAt) : [];
+                        app.data.meetings = meetingsArray;
+                        app.render.meetings(meetingsArray);
+                        app.render.dashboard(); // डैशबोर्ड UI अपडेट करें
+                        app.render.dashboardSlider(); // स्लाइडर अपडेट करें
+                        loadingOverlay.classList.add('hidden'); // डेटा लोड होने पर लोडर छिपाएँ
+                    }, (error) => {
+                        console.error("Firebase Read Error (meetings):", error);
+                        app.toast.show("Error loading meetings.", true);
+                        loadingOverlay.classList.add('hidden');
+                    });
+
+                    // सदस्य श्रोता
+                    const membersRef = ref(db, `jasMitraData/${userId}/members`);
+                    onValue(membersRef, (snapshot) => {
+                        const data = snapshot.val();
+                        const membersArray = data ? Object.keys(data).map(key => ({ ...data[key], id: key })).sort((a, b) => b.createdAt - a.createdAt) : [];
+                        app.data.members = membersArray;
+                        app.render.members(membersArray);
+                    }, (error) => {
+                        console.error("Firebase Read Error (members):", error);
+                        app.toast.show("Error loading members.", true);
+                    });
+
+                    // निर्णय श्रोता
+                    const decisionsRef = ref(db, `jasMitraData/${userId}/decisions`);
+                    onValue(decisionsRef, (snapshot) => {
+                        const data = snapshot.val();
+                        const decisionsArray = data ? Object.keys(data).map(key => ({ ...data[key], id: key })).sort((a, b) => b.createdAt - a.createdAt) : [];
+                        app.data.decisions = decisionsArray;
+                        app.render.decisions(decisionsArray);
+                        app.render.dashboard(); // डैशबोर्ड UI अपडेट करें
+                    }, (error) => {
+                        console.error("Firebase Read Error (decisions):", error);
+                        app.toast.show("Error loading decisions.", true);
+                    });
                 },
 
-                addMember: function (member) {
-                    this.data.members.unshift(member);
-                    this.save();
+                // --- डेटाबेस में लिखने के फ़ंक्शंस ---
+
+                addMeeting: async (meeting) => {
+                    const userId = app.data.userId;
+                    // Base64 तस्वीर सीधे ऑब्जेक्ट में है
+
+                    meeting.createdAt = serverTimestamp(); // सर्वर पर समय सेट करें
+
+                    // RTDB में सेव करें
+                    const newMeetingRef = push(ref(db, `jasMitraData/${userId}/meetings`));
+                    // meeting.id = newMeetingRef.key; // ID को अब सेव करने की ज़रूरत नहीं है, onValue इसे हैंडल करेगा
+                    await set(newMeetingRef, meeting);
                 },
 
-                addDecision: function (decision) {
-                    this.data.decisions.unshift(decision);
-                    this.save();
+                addMember: async (member) => {
+                    const userId = app.data.userId;
+                    // Base64 तस्वीर सीधे ऑब्जेक्ट में है
+
+                    member.createdAt = serverTimestamp();
+
+                    // RTDB में सेव करें
+                    const newMemberRef = push(ref(db, `jasMitraData/${userId}/members`));
+                    // member.id = newMemberRef.key;
+                    await set(newMemberRef, member);
                 },
 
-                updateDecisionStatus: function (id, newStatus) {
-                    const decision = this.data.decisions.find(d => d.id === id);
-                    if (decision) {
-                        decision.status = newStatus;
-                        this.save();
-                    }
+                addDecision: async (decision) => {
+                    const userId = app.data.userId;
+                    decision.createdAt = serverTimestamp();
+                    const newDecisionRef = push(ref(db, `jasMitraData/${userId}/decisions`));
+                    // decision.id = newDecisionRef.key;
+                    await set(newDecisionRef, decision);
                 },
 
-                addPhotoToMeeting: function (id, photoData) {
-                    const meeting = this.data.meetings.find(m => m.id === id);
-                    if (meeting) {
-                        if (!meeting.photos) meeting.photos = [];
-                        meeting.photos.push(photoData);
-                        this.save();
-                    }
+                updateDecisionStatus: async (id, newStatus) => {
+                    const userId = app.data.userId;
+                    // यहाँ 'id' Firebase द्वारा दी गई कुंजी है
+                    const decisionRef = ref(db, `jasMitraData/${userId}/decisions/${id}`);
+                    await update(decisionRef, { status: newStatus });
                 },
 
-                addPhotoToDecision: function (id, photoData) {
-                    const decision = this.data.decisions.find(d => d.id === id);
-                    if (decision) {
-                        if (!decision.photos) decision.photos = [];
-                        decision.photos.push(photoData);
-                        this.save();
-                    }
+                addPhotoToMeeting: async (id, photoData) => {
+                    const userId = app.data.userId;
+                    // Base64 डेटा को सीधे 'photos' ऑब्जेक्ट में पुश करें
+                    const photosRef = ref(db, `jasMitraData/${userId}/meetings/${id}/photos`);
+                    const newPhotoRef = push(photosRef); // 'photos' के अंदर एक नई कुंजी बनाएँ
+                    await set(newPhotoRef, photoData); // Base64 स्ट्रिंग को सेव करें
                 },
 
-                getMeetingById: function (id) {
-                    return this.data.meetings.find(m => m.id === id);
+                addPhotoToDecision: async (id, photoData) => {
+                    const userId = app.data.userId;
+                    const photosRef = ref(db, `jasMitraData/${userId}/decisions/${id}/photos`);
+                    const newPhotoRef = push(photosRef);
+                    await set(newPhotoRef, photoData); // Base64 स्ट्रिंग को सेव करें
                 },
 
-                getDecisionById: function (id) {
-                    return this.data.decisions.find(d => d.id === id);
+                // --- डेटा पढ़ने के फ़ंक्शंस (लोकल डेटा से) ---
+
+                getMeetingById: (id) => {
+                    return app.data.meetings.find(m => m.id === id);
                 },
 
-                getMeetings: function () { return this.data.meetings; },
-                getMembers: function () { return this.data.members; },
-                getDecisions: function () { return this.data.decisions; },
-
-                // डैशबोर्ड के लिए हेल्पर्स
-                getPendingDecisions: function () {
-                    return this.data.decisions.filter(d => d.status === 'pending').slice(0, 3); // 3 दिखाएं
+                getDecisionById: (id) => {
+                    return app.data.decisions.find(d => d.id === id);
                 },
-                getRecentPhotos: function (limit = 3) {
-                    return this.data.meetings
-                        .flatMap(m => m.photos || []) // सभी फोटो को एक ऐरे में लाएं
-                        .slice(0, limit); // केवल कुछ ही लें
+
+                getPendingDecisions: () => {
+                    return app.data.decisions.filter(d => d.status === 'pending').slice(0, 3);
+                },
+
+                getRecentPhotos: (limit = 3) => {
+                    // RTDB 'photos' ऑब्जेक्ट को ऐरे में बदलें
+                    return app.data.meetings
+                        .flatMap(m => (m.photos ? (Array.isArray(m.photos) ? m.photos : Object.values(m.photos)) : []))
+                        .slice(0, limit);
                 }
             };
 
             // --- 2. मुख्य ऐप लॉजिक ---
             const app = {
-                currentPage: 'home', // वर्तमान पेज को ट्रैक करें
+                currentPage: 'home',
                 currentSliderIndex: 0,
-                currentShareId: null, // नया: शेयरिंग के लिए ID
-                currentShareType: null, // नया: 'meeting' or 'decision'
+                currentShareId: null,
+                currentShareType: null,
 
-                // DOM एलिमेंट्स को कैश करें
+                // नया: लोकल डेटा का कैश
+                data: {
+                    userId: null,
+                    meetings: [],
+                    members: [],
+                    decisions: []
+                },
+
                 elements: {
+                    loadingOverlay: document.getElementById('loading-overlay'),
                     pages: document.querySelectorAll('.page'),
                     navButtons: document.querySelectorAll('.nav-btn'),
                     fab: document.getElementById('fab'),
                     fabIcon: document.querySelector('#fab .material-icons-outlined'),
-
                     modalBackdrop: document.getElementById('modal-backdrop'),
                     allModals: document.querySelectorAll('.modal-container'),
                     closeModalBtns: document.querySelectorAll('.close-modal'),
-
-                    // फॉर्म
                     meetingForm: document.getElementById('meeting-form'),
                     photoPreview: document.getElementById('photoPreview'),
                     memberForm: document.getElementById('member-form'),
@@ -1327,39 +1453,27 @@
                     decisionForm: document.getElementById('decision-form'),
                     addPhotoForm: document.getElementById('add-photo-form'),
                     addDecisionPhotoForm: document.getElementById('add-decision-photo-form'),
-
-                    // लिस्ट
                     meetingsList: document.getElementById('meetings-list'),
                     membersList: document.getElementById('members-list'),
                     decisionsList: document.getElementById('decisions-list'),
-
-                    // डैशबोर्ड
                     dashboardSlider: document.getElementById('dashboard-slider'),
                     dashboardFeedList: document.getElementById('dashboard-feed-list'),
                     quickAddMeeting: document.getElementById('quick-add-meeting'),
                     quickAddMember: document.getElementById('quick-add-member'),
-
-                    // मीटिंग विवरण मोडल
                     detailsTitle: document.getElementById('details-title'),
                     detailsDate: document.getElementById('details-date'),
                     detailsDecisions: document.getElementById('details-decisions'),
                     detailsPhotoGallery: document.getElementById('details-photo-gallery'),
                     detailsMeetingId: document.getElementById('details-meeting-id'),
-
-                    // निर्णय विवरण मोडल
                     detailsDecisionTitle: document.getElementById('details-decision-title'),
                     detailsDecisionResponsible: document.getElementById('details-decision-responsible'),
                     detailsDecisionDetails: document.getElementById('details-decision-details'),
                     detailsDecisionPhotoGallery: document.getElementById('details-decision-photo-gallery'),
                     detailsDecisionId: document.getElementById('details-decision-id'),
-
-                    // शेयरिंग
                     btnShareMeeting: document.getElementById('btn-share-meeting'),
                     btnShareDecision: document.getElementById('btn-share-decision'),
                     btnShareWhatsapp: document.getElementById('btn-share-whatsapp'),
                     btnSharePdf: document.getElementById('btn-share-pdf'),
-
-                    // Lighbox
                     modalImageViewer: document.getElementById('modal-image-viewer'),
                     fullscreenImage: document.getElementById('fullscreen-image'),
                     closeFullscreenModal: document.querySelector('.close-fullscreen-modal')
@@ -1367,19 +1481,17 @@
 
                 // ऐप शुरू करें
                 init: function () {
-                    // फेविकॉन प्लेसहोल्डर सेट करें (यदि असली मौजूद नहीं है)
                     const favicon = document.getElementById('favicon');
                     const testFavicon = new Image();
                     testFavicon.onerror = () => {
-                        // अगर favicon.ico लोड नहीं होता है, तो SVG फॉलबैक का उपयोग करें
                         favicon.href = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>➕</text></svg>';
                     };
-                    testFavicon.src = 'favicon.ico'; // अब favicon.ico को जाँचे
+                    testFavicon.src = 'favicon.ico';
 
-                    db.init(); // डेटाबेस शुरू करें
-                    this.addEventListeners(); // सभी बटन लिस्नर जोड़ें
-                    this.render.all(); // सभी पेज रेंडर करें
-                    this.navigate.showPage('home'); // होम पेज दिखाएं
+                    this.addEventListeners();
+                    // Firebase Auth प्रारंभ करें, जो डेटा लोडिंग को ट्रिगर करेगा
+                    dbFirebase.initAuth();
+                    this.navigate.showPage('home');
                 },
 
                 // सभी इवेंट लिस्नर सेट करें
@@ -1398,11 +1510,8 @@
                         btn.addEventListener('click', () => this.modal.hide());
                     });
                     els.modalBackdrop.addEventListener('click', () => this.modal.hide());
-
-                    // Lighbox बंद करें
                     els.modalImageViewer.addEventListener('click', () => this.modal.hide('image-viewer'));
 
-                    // शेयर बटन (मोडल के अंदर)
                     els.btnShareMeeting.addEventListener('click', () => {
                         app.currentShareId = els.detailsMeetingId.value;
                         app.currentShareType = 'meeting';
@@ -1415,19 +1524,17 @@
                         this.modal.show('share-menu');
                     });
 
-                    // शेयर मेनू बटन
                     els.btnShareWhatsapp.addEventListener('click', () => {
                         this.actions.shareText(app.currentShareId, app.currentShareType);
                         this.modal.hide();
                     });
 
                     els.btnSharePdf.addEventListener('click', () => {
-                        // FIX: यह अब एक async फ़ंक्शन है, लेकिन हम इसे "फायर एंड फॉरगेट" कर सकते हैं
                         this.actions.generatePdf(app.currentShareId, app.currentShareType);
                         this.modal.hide();
                     });
 
-                    // फॉर्म सबमिशन
+                    // फॉर्म सबमिशन (अब async)
                     els.meetingForm.addEventListener('submit', (e) => this.actions.submitMeeting(e));
                     els.memberForm.addEventListener('submit', (e) => this.actions.submitMember(e));
                     els.decisionForm.addEventListener('submit', (e) => this.actions.submitDecision(e));
@@ -1439,28 +1546,21 @@
                     els.memberForm.memberPhoto.addEventListener('change', (e) => this.actions.previewPhoto(e, els.memberPhotoPreview, e.target));
 
                     // डैशबोर्ड क्विक बटन
-                    els.quickAddMeeting.addEventListener('click', () => {
-                        this.modal.show('meeting');
-                    });
-                    els.quickAddMember.addEventListener('click', () => {
-                        this.modal.show('member');
-                    });
+                    els.quickAddMeeting.addEventListener('click', () => this.modal.show('meeting'));
+                    els.quickAddMember.addEventListener('click', () => this.modal.show('member'));
 
                     // डायनामिक बटन के लिए इवेंट डेलिगेशन
                     document.body.addEventListener('click', (e) => {
-                        // मीटिंग कार्ड पर क्लिक
                         const meetingCard = e.target.closest('.meeting-card');
                         if (meetingCard && meetingCard.dataset.meetingId) {
                             this.actions.showMeetingDetails(meetingCard.dataset.meetingId);
                         }
-                        // निर्णय एडिट बटन पर क्लिक
                         const decisionEditBtn = e.target.closest('.btn-edit-decision');
                         if (decisionEditBtn && decisionEditBtn.dataset.id) {
                             this.actions.showDecisionDetails(decisionEditBtn.dataset.id);
                         }
-                        // फुलस्क्रीन इमेज क्लिक
                         if (e.target.matches('.photo-gallery img')) {
-                            e.stopPropagation(); // मोडल को बंद होने से रोकें
+                            e.stopPropagation();
                             this.actions.showFullscreenImage(e.target.src);
                         }
                     });
@@ -1475,21 +1575,12 @@
                     });
                 },
 
-                // --- 3. रेंडरिंग फ़ंक्शंस ---
+                // --- 3. रेंडरिंग फ़ंक्शंस (अब डेटा को आर्ग्युमेंट के रूप में लेते हैं) ---
                 render: {
-                    all: function () {
-                        this.dashboard();
-                        this.meetings();
-                        this.members();
-                        this.decisions();
-                        this.dashboardSlider();
-                    },
-
-                    // डैशबोर्ड आँकड़े और फीड
                     dashboard: function () {
                         const feedList = app.elements.dashboardFeedList;
-                        const pending = db.getPendingDecisions();
-                        feedList.innerHTML = ''; // फीड को साफ़ करें
+                        const pending = dbFirebase.getPendingDecisions(); // लोकल डेटा से प्राप्त करें
+                        feedList.innerHTML = '';
                         if (pending.length === 0) {
                             feedList.innerHTML = '<p style="font-size: 0.9rem; color: var(--on-surface-variant); text-align: center;">कोई लंबित कार्य नहीं है।</p>';
                         } else {
@@ -1507,20 +1598,19 @@
                         }
                     },
 
-                    // डैशबोर्ड स्लाइडर
                     dashboardSlider: function () {
                         const slider = app.elements.dashboardSlider;
-                        let photos = db.getRecentPhotos(3); // 3 तस्वीरें लें
+                        let photos = dbFirebase.getRecentPhotos(3);
 
-                        // यदि कोई तस्वीर नहीं है, तो आपकी दी गई तस्वीर को प्लेसहोल्डर के रूप में उपयोग करें
                         if (photos.length === 0) {
                             photos = [
                                 'https://i.postimg.cc/tJLxR4GT/Whats-App-Image-2025-11-01-at-18-45-22-460e6b88.jpg'
                             ];
                         }
 
-                        slider.innerHTML = ''; // स्लाइडर साफ़ करें
+                        slider.innerHTML = '';
                         photos.forEach((photo, index) => {
+                            // Base64 या URL के लिए काम करता है
                             slider.innerHTML += `
                                 <div class="slider-item ${index === 0 ? 'active' : ''}" 
                                      style="background-image: url('${photo}')">
@@ -1528,22 +1618,19 @@
                             `;
                         });
 
-                        // स्लाइडर लॉजिक
                         const items = slider.querySelectorAll('.slider-item');
                         if (items.length > 1) {
-                            if (app.sliderInterval) clearInterval(app.sliderInterval); // पुराना इंटरवल साफ़ करें
+                            if (app.sliderInterval) clearInterval(app.sliderInterval);
                             app.currentSliderIndex = 0;
                             app.sliderInterval = setInterval(() => {
                                 items[app.currentSliderIndex].classList.remove('active');
                                 app.currentSliderIndex = (app.currentSliderIndex + 1) % items.length;
                                 items[app.currentSliderIndex].classList.add('active');
-                            }, 4000); // हर 4 सेकंड में बदलें
+                            }, 4000);
                         }
                     },
 
-                    // मीटिंग कार्ड रेंडर करें
-                    meetings: function () {
-                        const meetings = db.getMeetings();
+                    meetings: function (meetings) { // डेटा को आर्ग्युमेंट के रूप में लें
                         const listEl = app.elements.meetingsList;
                         listEl.innerHTML = '';
                         if (meetings.length === 0) {
@@ -1551,8 +1638,10 @@
                             return;
                         }
                         meetings.forEach(m => {
-                            // फोटो ऐरे से पहली तस्वीर लें
-                            const photo = m.photos && m.photos.length > 0 ? m.photos[0] : 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
+                            // RTDB 'photos' को ऐरे में बदलें
+                            const photosArray = m.photos ? (Array.isArray(m.photos) ? m.photos : Object.values(m.photos)) : [];
+                            const photo = photosArray.length > 0 ? photosArray[0] : 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
+
                             listEl.innerHTML += `
                                 <div class="card meeting-card" data-meeting-id="${m.id}">
                                     <img src="${photo}" alt="Meeting Photo">
@@ -1563,9 +1652,7 @@
                         });
                     },
 
-                    // सदस्य कार्ड रेंडर करें
-                    members: function () {
-                        const members = db.getMembers();
+                    members: function (members) { // डेटा को आर्ग्युमेंट के रूप में लें
                         const listEl = app.elements.membersList;
                         listEl.innerHTML = '';
                         if (members.length === 0) {
@@ -1578,7 +1665,7 @@
                                 `<div class="profile-pic"><span class="material-icons-outlined">person</span></div>`;
 
                             listEl.innerHTML += `
-                                <div class="card member-card">
+                                <div class="card member-card" data-member-id="${p.id}">
                                     ${photo}
                                     <div class="info">
                                         <h3>${p.name}</h3>
@@ -1593,9 +1680,7 @@
                         });
                     },
 
-                    // निर्णय कार्ड रेंडर करें
-                    decisions: function () {
-                        const decisions = db.getDecisions();
+                    decisions: function (decisions) { // डेटा को आर्ग्युमेंट के रूप में लें
                         const listEl = app.elements.decisionsList;
                         listEl.innerHTML = '';
                         if (decisions.length === 0) {
@@ -1625,19 +1710,19 @@
                         });
                     },
 
-                    // मीटिंग विवरण मोडल रेंडर करें
                     meetingDetails: function (meeting) {
                         const els = app.elements;
                         els.detailsTitle.textContent = meeting.agenda;
                         els.detailsDate.textContent = meeting.date;
                         els.detailsDecisions.textContent = meeting.decisions || 'N/A';
-                        els.detailsMeetingId.value = meeting.id; // फॉर्म में ID सेव करें
+                        els.detailsMeetingId.value = meeting.id;
 
-                        // फोटो गैलरी भरें
                         const gallery = els.detailsPhotoGallery;
                         gallery.innerHTML = '';
-                        if (meeting.photos && meeting.photos.length > 0) {
-                            meeting.photos.forEach(photo => {
+                        const photosArray = meeting.photos ? (Array.isArray(meeting.photos) ? meeting.photos : Object.values(meeting.photos)) : [];
+
+                        if (photosArray.length > 0) {
+                            photosArray.forEach(photo => {
                                 gallery.innerHTML += `<img src="${photo}" alt="Meeting Gallery Photo">`;
                             });
                         } else {
@@ -1645,19 +1730,19 @@
                         }
                     },
 
-                    // निर्णय विवरण मोडल रेंडर करें
                     decisionDetails: function (decision) {
                         const els = app.elements;
                         els.detailsDecisionTitle.textContent = decision.title;
                         els.detailsDecisionResponsible.textContent = decision.responsible;
                         els.detailsDecisionDetails.textContent = decision.details || 'N/A';
-                        els.detailsDecisionId.value = decision.id; // फॉर्म में ID सेव करें
+                        els.detailsDecisionId.value = decision.id;
 
-                        // फोटो गैलरी भरें
                         const gallery = els.detailsDecisionPhotoGallery;
                         gallery.innerHTML = '';
-                        if (decision.photos && decision.photos.length > 0) {
-                            decision.photos.forEach(photo => {
+                        const photosArray = decision.photos ? (Array.isArray(decision.photos) ? decision.photos : Object.values(decision.photos)) : [];
+
+                        if (photosArray.length > 0) {
+                            photosArray.forEach(photo => {
                                 gallery.innerHTML += `<img src="${photo}" alt="Decision Gallery Photo">`;
                             });
                         } else {
@@ -1666,7 +1751,7 @@
                     }
                 },
 
-                // --- 4. नेविगेशन (JS अपडेट किया गया) ---
+                // --- 4. नेविगेशन ---
                 navigate: {
                     showPage: function (pageId) {
                         app.currentPage = pageId;
@@ -1674,12 +1759,10 @@
                         document.getElementById(`page-${pageId}`).classList.add('active');
 
                         app.elements.navButtons.forEach(btn => {
-                            // आइकन को ढूंढें (इसमें 'material-icons' या 'material-icons-outlined' क्लास हो सकती है)
                             const icon = btn.querySelector('.nav-indicator span');
                             const isActive = btn.dataset.page === pageId;
                             btn.classList.toggle('active', isActive);
 
-                            // आइकन स्टाइल को क्लास बदलकर स्विच करें
                             if (isActive) {
                                 icon.classList.remove('material-icons-outlined');
                                 icon.classList.add('material-icons');
@@ -1727,165 +1810,163 @@
                             app.elements.modalImageViewer.classList.remove('visible');
                             return;
                         }
-
                         app.elements.modalBackdrop.classList.remove('visible');
                         app.elements.allModals.forEach(modal => {
                             modal.classList.remove('visible');
                         });
-
-                        // सभी फॉर्म रीसेट करें
                         app.elements.meetingForm.reset();
                         app.elements.memberForm.reset();
                         app.elements.decisionForm.reset();
                         app.elements.addPhotoForm.reset();
                         app.elements.addDecisionPhotoForm.reset();
-
-                        // सभी प्रीव्यू साफ़ करें
                         app.elements.photoPreview.style.display = 'none';
                         app.elements.photoPreview.src = '';
                         app.elements.memberPhotoPreview.style.display = 'none';
                         app.elements.memberPhotoPreview.src = '';
-
-                        // कंप्रेस्ड डेटा साफ़ करें
                         app.elements.meetingForm.meetingPhoto.dataset.compressedData = '';
                         app.elements.memberForm.memberPhoto.dataset.compressedData = '';
                     }
                 },
 
-                // --- 6. ऐप एक्शन्स ---
+                // --- 6. ऐप एक्शन्स (async, Base64 के साथ) ---
                 actions: {
-                    // FAB क्लिक हैंडलर
                     handleFabClick: function () {
                         switch (app.currentPage) {
-                            case 'meetings':
-                                app.modal.show('meeting');
-                                break;
-                            case 'members':
-                                app.modal.show('member');
-                                break;
-                            case 'decisions':
-                                app.modal.show('decision');
-                                break;
+                            case 'meetings': app.modal.show('meeting'); break;
+                            case 'members': app.modal.show('member'); break;
+                            case 'decisions': app.modal.show('decision'); break;
                         }
                     },
 
-                    // मीटिंग सबमिट
-                    submitMeeting: function (e) {
+                    submitMeeting: async function (e) {
                         e.preventDefault();
                         const form = app.elements.meetingForm;
                         const photoData = form.meetingPhoto.dataset.compressedData || 'https://placehold.co/600x400/eee/ccc?text=No+Photo';
 
                         const newMeeting = {
-                            id: 'm' + Date.now(),
                             date: form.meetingDate.value,
                             agenda: form.meetingAgenda.value,
                             decisions: form.meetingDecisions.value,
-                            photos: [photoData] // इसे एक ऐरे के रूप में सेव करें
+                            photos: [photoData] // Base64 स्ट्रिंग को ऐरे में सेव करें
                         };
-                        db.addMeeting(newMeeting);
-                        app.render.meetings();
-                        app.render.dashboard(); // फीड और स्लाइडर अपडेट करें
-                        app.render.dashboardSlider();
-                        app.modal.hide();
-                        app.toast.show('बैठक सफलतापूर्वक सेव की गई!');
-                        app.navigate.showPage('meetings');
+
+                        app.toast.show('बैठक सेव की जा रही है...');
+                        try {
+                            await dbFirebase.addMeeting(newMeeting);
+                            app.modal.hide();
+                            app.toast.show('बैठक सफलतापूर्वक सेव की गई!');
+                            app.navigate.showPage('meetings');
+                        } catch (error) {
+                            console.error("Error adding meeting:", error);
+                            app.toast.show('त्रुटि: बैठक सेव नहीं हो सकी।', true);
+                        }
                     },
 
-                    // सदस्य सबमिट
-                    submitMember: function (e) {
+                    submitMember: async function (e) {
                         e.preventDefault();
                         const form = app.elements.memberForm;
                         const photoData = form.memberPhoto.dataset.compressedData || null;
 
                         const newMember = {
-                            id: 'p' + Date.now(),
                             name: form.memberName.value,
                             role: form.memberRole.value,
                             phone: form.memberPhone.value,
-                            photo: photoData
+                            photo: photoData // Base64 स्ट्रिंग (या null) को सेव करें
                         };
-                        db.addMember(newMember);
-                        app.render.members();
-                        app.render.dashboard();
-                        app.modal.hide();
-                        app.toast.show('सदस्य सफलतापूर्वक जोड़ा गया!');
-                        app.navigate.showPage('members');
+
+                        app.toast.show('सदस्य सेव किया जा रहा है...');
+                        try {
+                            await dbFirebase.addMember(newMember);
+                            app.modal.hide();
+                            app.toast.show('सदस्य सफलतापूर्वक जोड़ा गया!');
+                            app.navigate.showPage('members');
+                        } catch (error) {
+                            console.error("Error adding member:", error);
+                            app.toast.show('त्रुटि: सदस्य सेव नहीं हो सका।', true);
+                        }
                     },
 
-                    // निर्णय सबमिट
-                    submitDecision: function (e) {
+                    submitDecision: async function (e) {
                         e.preventDefault();
                         const form = app.elements.decisionForm;
                         const newDecision = {
-                            id: 'd' + Date.now(),
                             title: form.decisionTitle.value,
                             responsible: form.decisionResponsible.value,
                             status: form.decisionStatus.value,
                             details: form.decisionDetails.value,
-                            photos: []
+                            photos: {}
                         };
-                        db.addDecision(newDecision);
-                        app.render.decisions();
-                        app.render.dashboard(); // फीड अपडेट करें
-                        app.modal.hide();
-                        app.toast.show('निर्णय सफलतापूर्वक जोड़ा गया!');
-                        app.navigate.showPage('decisions');
+
+                        app.toast.show('निर्णय सेव किया जा रहा है...');
+                        try {
+                            await dbFirebase.addDecision(newDecision);
+                            app.modal.hide();
+                            app.toast.show('निर्णय सफलतापूर्वक जोड़ा गया!');
+                            app.navigate.showPage('decisions');
+                        } catch (error) {
+                            console.error("Error adding decision:", error);
+                            app.toast.show('त्रुटि: निर्णय सेव नहीं हो सका।', true);
+                        }
                     },
 
-                    // मीटिंग विवरण में नई तस्वीर सबमिट करें
-                    submitAnotherPhoto: function (e) {
+                    submitAnotherPhoto: async function (e) {
                         e.preventDefault();
                         const form = app.elements.addPhotoForm;
                         const meetingId = form.elements['details-meeting-id'].value;
                         const photoFile = form.elements['newMeetingPhoto'].files[0];
 
                         if (photoFile) {
-                            app.toast.show('Compressing photo...');
-                            this.compressImage(photoFile, (photoData) => {
-                                db.addPhotoToMeeting(meetingId, photoData);
-                                // मोडल को रिफ्रेश करें
-                                const updatedMeeting = db.getMeetingById(meetingId);
-                                app.render.meetingDetails(updatedMeeting);
-                                app.render.dashboardSlider(); // स्लाइडर को भी रिफ्रेश करें
-                                form.reset();
-                                app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                            app.toast.show('तस्वीर कंप्रेस हो रही है...');
+                            this.compressImage(photoFile, async (photoData) => {
+                                app.toast.show('तस्वीर सेव की जा रही है...');
+                                try {
+                                    // Base64 डेटा को सीधे सेव करें
+                                    await dbFirebase.addPhotoToMeeting(meetingId, photoData);
+                                    form.reset();
+                                    app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                                } catch (error) {
+                                    app.toast.show('त्रुटि: तस्वीर सेव नहीं हो सकी।', true);
+                                }
                             });
                         } else {
-                            app.toast.show('कृपया एक तस्वीर चुनें।');
+                            app.toast.show('कृपया एक तस्वीर चुनें।', true);
                         }
                     },
 
-                    // निर्णय विवरण में नई तस्वीर सबमिट करें
-                    submitAnotherPhotoToDecision: function (e) {
+                    submitAnotherPhotoToDecision: async function (e) {
                         e.preventDefault();
                         const form = app.elements.addDecisionPhotoForm;
                         const decisionId = form.elements['details-decision-id'].value;
                         const photoFile = form.elements['newDecisionPhoto'].files[0];
 
                         if (photoFile) {
-                            app.toast.show('Compressing photo...');
-                            this.compressImage(photoFile, (photoData) => {
-                                db.addPhotoToDecision(decisionId, photoData);
-                                // मोडल को रिफ्रेश करें
-                                const updatedDecision = db.getDecisionById(decisionId);
-                                app.render.decisionDetails(updatedDecision);
-                                form.reset();
-                                app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                            app.toast.show('तस्वीर कंप्रेस हो रही है...');
+                            this.compressImage(photoFile, async (photoData) => {
+                                app.toast.show('तस्वीर सेव की जा रही है...');
+                                try {
+                                    await dbFirebase.addPhotoToDecision(decisionId, photoData);
+                                    form.reset();
+                                    app.toast.show('तस्वीर सफलतापूर्वक जोड़ी गई!');
+                                } catch (error) {
+                                    app.toast.show('त्रुटि: तस्वीर सेव नहीं हो सकी।', true);
+                                }
                             });
                         } else {
-                            app.toast.show('कृपया एक तस्वीर चुनें।');
+                            app.toast.show('कृपया एक तस्वीर चुनें।', true);
                         }
                     },
 
-                    // स्टेटस अपडेट
-                    updateDecisionStatus: function (id, newStatus, selectElement) {
-                        db.updateDecisionStatus(id, newStatus);
+                    updateDecisionStatus: async function (id, newStatus, selectElement) {
                         selectElement.className = 'status-select status-' + newStatus;
-                        app.render.dashboard(); // लंबित गिनती अपडेट करें
-                        app.toast.show('स्टेटस अपडेट किया गया!');
+                        try {
+                            await dbFirebase.updateDecisionStatus(id, newStatus);
+                            app.toast.show('स्टेटस अपडेट किया गया!');
+                        } catch (error) {
+                            console.error("Error updating status:", error);
+                            app.toast.show('त्रुटि: स्टेटस अपडेट नहीं हो सका।', true);
+                        }
                     },
 
-                    // फोटो प्रीव्यू (जेनेरिक) और कंप्रेस
                     previewPhoto: function (event, previewElement, inputElement) {
                         const file = event.target.files[0];
                         if (!file) {
@@ -1894,26 +1975,23 @@
                             return;
                         }
 
-                        // 1. तुरंत प्रीव्यू दिखाएं
                         previewElement.src = URL.createObjectURL(file);
                         previewElement.style.display = 'block';
 
-                        // 2. कंप्रेस करें और डेटा को बैकग्राउंड में सेव करें
-                        app.toast.show('Compressing photo...');
+                        app.toast.show('तस्वीर कंप्रेस हो रही है...');
                         this.compressImage(file, (compressedData) => {
                             inputElement.dataset.compressedData = compressedData;
-                            app.toast.show('Photo ready to save!');
+                            app.toast.show('तस्वीर सेव करने के लिए तैयार है!');
                         }, (error) => {
                             app.toast.show(error, true);
                         });
                     },
 
-                    // नया: इमेज कंप्रेशन फ़ंक्शन
                     compressImage: function (file, callback, errorCallback) {
                         const MAX_WIDTH = 1024;
                         const MAX_HEIGHT = 1024;
                         const MIME_TYPE = "image/jpeg";
-                        const QUALITY = 0.7; // 70% quality
+                        const QUALITY = 0.7;
 
                         const reader = new FileReader();
                         reader.onload = (e) => {
@@ -1939,95 +2017,80 @@
                                 canvas.height = height;
                                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0, width, height);
-
                                 const compressedData = canvas.toDataURL(MIME_TYPE, QUALITY);
 
-                                // localStorage की सीमा जांचें
-                                if (compressedData.length > 500000) { // ~0.5MB
-                                    if (errorCallback) errorCallback('Error: Image too large to save.');
+                                // RTDB के लिए आकार की जाँच (10MB~ सीमा, लेकिन हम 5MB पर रोकेंगे)
+                                if (compressedData.length > 5 * 1024 * 1024) {
+                                    if (errorCallback) errorCallback('Error: Image too large to save in database.');
                                     return;
                                 }
 
                                 callback(compressedData);
                             };
-                            img.onerror = () => {
-                                if (errorCallback) errorCallback('Error: Invalid image file.');
-                            };
+                            img.onerror = () => { if (errorCallback) errorCallback('Error: Invalid image file.'); };
                             img.src = e.target.result;
                         };
-                        reader.onerror = () => {
-                            if (errorCallback) errorCallback('Error: Could not read image file.');
-                        };
+                        reader.onerror = () => { if (errorCallback) errorCallback('Error: Could not read image file.'); };
                         reader.readAsDataURL(file);
                     },
 
-                    // मीटिंग विवरण दिखाएं
                     showMeetingDetails: function (id) {
-                        const meeting = db.getMeetingById(id);
+                        const meeting = dbFirebase.getMeetingById(id);
                         if (meeting) {
                             app.render.meetingDetails(meeting);
                             app.modal.show('meeting-details');
                         }
                     },
 
-                    // निर्णय विवरण दिखाएं
                     showDecisionDetails: function (id) {
-                        const decision = db.getDecisionById(id);
+                        const decision = dbFirebase.getDecisionById(id);
                         if (decision) {
                             app.render.decisionDetails(decision);
                             app.modal.show('decision-details');
                         }
                     },
 
-                    // फुलस्क्रीन इमेज दिखाएं
                     showFullscreenImage: function (src) {
                         app.elements.fullscreenImage.src = src;
                         app.modal.show('image-viewer');
                     },
 
-                    // शेयर टेक्स्ट
                     shareText: function (id, type) {
                         let text = '*JAS Mitra Report*\n\n';
                         if (type === 'meeting') {
-                            const meeting = db.getMeetingById(id);
+                            const meeting = dbFirebase.getMeetingById(id);
                             if (!meeting) return;
+                            const photosArray = meeting.photos ? (Array.isArray(meeting.photos) ? meeting.photos : Object.values(meeting.photos)) : [];
                             text += `*Meeting Agenda:* ${meeting.agenda}\n`;
                             text += `*Date:* ${meeting.date}\n`;
                             text += `*Decisions:* ${meeting.decisions || 'N/A'}\n`;
-                            text += `\n*${(meeting.photos || []).length} photo(s) available in the app.*`;
+                            text += `\n*${photosArray.length} photo(s) available in the app.*`;
                         } else {
-                            const decision = db.getDecisionById(id);
+                            const decision = dbFirebase.getDecisionById(id);
                             if (!decision) return;
+                            const photosArray = decision.photos ? (Array.isArray(decision.photos) ? decision.photos : Object.values(decision.photos)) : [];
                             text += `*Decision:* ${decision.title}\n`;
                             text += `*Status:* ${decision.status}\n`;
                             text += `*Responsible:* ${decision.responsible}\n`;
                             text += `*Notes:* ${decision.details || 'N/A'}\n`;
-                            text += `\n*${(decision.photos || []).length} photo(s) available in the app.*`;
+                            text += `\n*${photosArray.length} photo(s) available in the app.*`;
                         }
-
                         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                         window.open(url, '_blank');
                     },
 
-                    // FIX: PDF जनरेट करें (html2canvas के साथ अपडेट किया गया)
                     generatePdf: async function (id, type) {
                         app.toast.show('Generating PDF...');
-
-                        // A4 size in points (pt)
-                        const doc = new jsPDF({
-                            unit: 'pt',
-                            format: 'a4'
-                        });
-
-                        // 1. रेंडरिंग के लिए HTML तैयार करें
+                        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
                         const renderContainer = document.getElementById('pdf-render-container');
                         let reportHtml = '';
                         let fileName = 'JAS_Mitra_Report.pdf';
 
                         if (type === 'meeting') {
-                            const meeting = db.getMeetingById(id);
+                            const meeting = dbFirebase.getMeetingById(id);
                             if (!meeting) return;
                             fileName = `JAS_Mitra_Meeting_${meeting.id}.pdf`;
+                            const photosArray = meeting.photos ? (Array.isArray(meeting.photos) ? meeting.photos : Object.values(meeting.photos)) : [];
 
                             reportHtml = `
                                 <h1 style="font-size: 18pt; color: #2A9D8F; font-weight: bold;">JAS Mitra Report</h1>
@@ -2037,20 +2100,19 @@
                                 <p style="font-size: 10pt; white-space: pre-wrap; word-wrap: break-word;">${meeting.decisions || 'N/A'}</p>
                                 <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">तस्वीरें:</h3>
                             `;
-
-                            // तस्वीरें जोड़ें (Base64 data URLs)
-                            if (meeting.photos && meeting.photos.length > 0) {
-                                meeting.photos.forEach((photo, index) => {
+                            if (photosArray.length > 0) {
+                                photosArray.forEach(photo => {
                                     reportHtml += `<img src="${photo}" style="width: 100%; max-width: 550px; margin-top: 10px; border: 1px solid #eee; break-inside: avoid;">`;
                                 });
                             } else {
                                 reportHtml += '<p style="font-size: 10pt;">कोई तस्वीर नहीं है।</p>';
                             }
 
-                        } else { // 'decision'
-                            const decision = db.getDecisionById(id);
+                        } else {
+                            const decision = dbFirebase.getDecisionById(id);
                             if (!decision) return;
                             fileName = `JAS_Mitra_Decision_${decision.id}.pdf`;
+                            const photosArray = decision.photos ? (Array.isArray(decision.photos) ? decision.photos : Object.values(decision.photos)) : [];
 
                             reportHtml = `
                                 <h1 style="font-size: 18pt; color: #2A9D8F; font-weight: bold;">JAS Mitra Report</h1>
@@ -2061,10 +2123,8 @@
                                 <p style="font-size: 10pt; white-space: pre-wrap; word-wrap: break-word;">${decision.details || 'N/A'}</p>
                                 <h3 style="font-size: 12pt; font-weight: bold; margin-top: 15px;">तस्वीरें:</h3>
                             `;
-
-                            // तस्वीरें जोड़ें
-                            if (decision.photos && decision.photos.length > 0) {
-                                decision.photos.forEach((photo, index) => {
+                            if (photosArray.length > 0) {
+                                photosArray.forEach(photo => {
                                     reportHtml += `<img src="${photo}" style="width: 100%; max-width: 550px; margin-top: 10px; border: 1px solid #eee; break-inside: avoid;">`;
                                 });
                             } else {
@@ -2074,44 +2134,35 @@
 
                         renderContainer.innerHTML = reportHtml;
 
-                        // 2. html2canvas का उपयोग करके DOM को कैनवास में बदलें
                         try {
                             const canvas = await html2canvas(renderContainer, {
-                                scale: 2, // बेहतर रिज़ॉल्यूशन के लिए
-                                useCORS: true // क्रॉस-ओरिजिन तस्वीरों के लिए (जैसे picsum)
+                                scale: 2,
+                                useCORS: false // Base64 के लिए 'false' पर सेट करें
                             });
 
                             const imgData = canvas.toDataURL('image/png');
                             const imgProps = doc.getImageProperties(imgData);
                             const pdfWidth = doc.internal.pageSize.getWidth();
                             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
                             let heightLeft = pdfHeight;
                             let position = 0;
                             const pageHeight = doc.internal.pageSize.getHeight();
 
-                            // 3. कैनवास इमेज को PDF में जोड़ें
                             doc.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
                             heightLeft -= pageHeight;
 
-                            // यदि कंटेंट लंबा है तो नए पेज जोड़ें
                             while (heightLeft > 0) {
-                                position = -heightLeft; // पिछले पेजों की ऊंचाई को घटाएं
+                                position = -heightLeft;
                                 doc.addPage();
                                 doc.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
                                 heightLeft -= pageHeight;
                             }
-
-                            // 4. PDF सेव करें
                             doc.save(fileName);
                             app.toast.show('PDF Downloaded!');
-
                         } catch (e) {
-                            console.error("Error generating PDF with html2canvas:", e);
-                            app.toast.show('Error generating PDF.', true);
+                            console.error("Error generating PDF:", e);
+                            app.toast.show('Error generating PDF. Check console.', true);
                         }
-
-                        // 5. हिडन कंटेनर को साफ़ करें
                         renderContainer.innerHTML = '';
                     }
                 },
@@ -2123,12 +2174,10 @@
                         toast.className = 'toast';
                         toast.textContent = message;
                         if (isError) {
-                            toast.style.backgroundColor = '#D32F2F'; // त्रुटि के लिए लाल
+                            toast.classList.add('error');
                         }
                         document.getElementById('toast-container').appendChild(toast);
-
                         setTimeout(() => toast.classList.add('show'), 10);
-
                         setTimeout(() => {
                             toast.classList.remove('show');
                             setTimeout(() => toast.remove(), 300);
