@@ -13,8 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Material Icons - Filled और Outlined दोनों को इम्पोर्ट करें -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
 
     <style>
         /* --- 1. मटेरियल 3 कलर पैलेट और बेस --- */
@@ -150,7 +150,7 @@
             padding-bottom: 5px;
         }
 
-        /* --- 5. बॉटम नेविगेशन बार --- */
+        /* --- 5. बॉटम नेविगेशन बार (UI अपडेट किया गया) --- */
         #bottom-nav {
             position: fixed;
             bottom: 0;
@@ -162,9 +162,10 @@
             border-top: 1px solid var(--surface-variant);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0;
+            padding: 0 8px; /* किनारों पर थोड़ा पैडिंग */
             z-index: 100;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            height: 80px; /* मटेरियल 3 ऊंचाई */
         }
         .nav-btn {
             background: none;
@@ -173,22 +174,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--on-surface-variant);
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            transition: all 0.2s ease;
+            justify-content: center; /* वर्टिकली सेंटर */
+            color: var(--on-surface-variant); /* निष्क्रिय रंग */
+            flex: 1; /* बराबर जगह बांटें */
+            height: 100%;
+            gap: 4px; /* आइकन और लेबल के बीच गैप */
+            transition: color 0.2s ease-in-out;
         }
+        .nav-indicator {
+            width: 64px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease-in-out;
+            background-color: transparent; /* डिफ़ॉल्ट रूप से पारदर्शी */
+        }
+        .nav-btn .material-icons,
         .nav-btn .material-icons-outlined {
             font-size: 24px;
+            transition: color 0.2s ease-in-out;
         }
-        .nav-btn span {
-            font-size: 0.75rem;
+        .nav-label {
+            font-size: 0.75rem; /* 12px */
             font-weight: 500;
-            margin-top: 2px;
+            transition: color 0.2s ease-in-out;
         }
+        /* सक्रिय (Active) स्थिति */
         .nav-btn.active {
-            color: var(--on-primary-container);
-            background-color: var(--primary-container);
+            color: var(--on-surface); /* सक्रिय लेबल टेक्स्ट */
+        }
+        .nav-btn.active .nav-indicator {
+            background-color: var(--primary-container); /* पिल का रंग */
+        }
+        .nav-btn.active .material-icons {
+            color: var(--on-primary-container); /* सक्रिय आइकन का रंग */
         }
 
         /* --- 6. फ्लोटिंग एक्शन बटन (FAB) --- */
@@ -818,23 +839,31 @@
             Created by Nayan Bhiogade
         </footer>
 
-        <!-- ===== 5. बॉटम नेविगेशन ===== -->
+        <!-- ===== 5. बॉटम नेविगेशन (HTML अपडेट किया गया) ===== -->
         <nav id="bottom-nav">
             <button class="nav-btn active" data-page="home">
-                <span class="material-icons-outlined">home</span>
-                <span>होम</span>
+                <div class="nav-indicator">
+                    <span class="material-icons">home</span> <!-- सक्रिय: filled -->
+                </div>
+                <span class="nav-label">होम</span>
             </button>
             <button class="nav-btn" data-page="meetings">
-                <span class="material-icons-outlined">event</span>
-                <span>बैठकें</span>
+                <div class="nav-indicator">
+                    <span class="material-icons-outlined">event</span> <!-- निष्क्रिय: outlined -->
+                </div>
+                <span class="nav-label">बैठकें</span>
             </button>
             <button class="nav-btn" data-page="members">
-                <span class="material-icons-outlined">groups</span>
-                <span>सदस्य</span>
+                <div class="nav-indicator">
+                    <span class="material-icons-outlined">groups</span> <!-- निष्क्रिय: outlined -->
+                </div>
+                <span class="nav-label">सदस्य</span>
             </button>
             <button class="nav-btn" data-page="decisions">
-                <span class="material-icons-outlined">checklist</span>
-                <span>निर्णय</span>
+                <div class="nav-indicator">
+                    <span class="material-icons-outlined">checklist</span> <!-- निष्क्रिय: outlined -->
+                </div>
+                <span class="nav-label">निर्णय</span>
             </button>
         </nav>
 
@@ -1469,7 +1498,7 @@
                     }
                 },
                 
-                // --- 4. नेविगेशन ---
+                // --- 4. नेविगेशन (JS अपडेट किया गया) ---
                 navigate: {
                     showPage: function(pageId) {
                         app.currentPage = pageId;
@@ -1477,7 +1506,19 @@
                         document.getElementById(`page-${pageId}`).classList.add('active');
                         
                         app.elements.navButtons.forEach(btn => {
-                            btn.classList.toggle('active', btn.dataset.page === pageId);
+                            // आइकन को ढूंढें (इसमें 'material-icons' या 'material-icons-outlined' क्लास हो सकती है)
+                            const icon = btn.querySelector('.nav-indicator span'); 
+                            const isActive = btn.dataset.page === pageId;
+                            btn.classList.toggle('active', isActive);
+                            
+                            // आइकन स्टाइल को क्लास बदलकर स्विच करें
+                            if (isActive) {
+                                icon.classList.remove('material-icons-outlined');
+                                icon.classList.add('material-icons');
+                            } else {
+                                icon.classList.remove('material-icons');
+                                icon.classList.add('material-icons-outlined');
+                            }
                         });
                         
                         const fab = app.elements.fab;
